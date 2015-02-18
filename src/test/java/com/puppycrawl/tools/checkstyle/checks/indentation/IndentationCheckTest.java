@@ -18,9 +18,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 package com.puppycrawl.tools.checkstyle.checks.indentation;
 
+import java.io.File;
+
 import com.puppycrawl.tools.checkstyle.BaseCheckTestSupport;
 import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
+
 import org.junit.Test;
 
 /**
@@ -946,5 +949,18 @@ public class IndentationCheckTest extends BaseCheckTestSupport
         final String[] expected = {};
         verify(checkConfig, getPath("indentation/InputSwitchCustom.java"),
                expected);
+    }
+
+    @Test
+    public void testLambda() throws Exception
+    {
+        final DefaultConfiguration checkConfig =
+            createCheckConfig(IndentationCheck.class);
+        checkConfig.addAttribute("basicOffset", "2");
+        checkConfig.addAttribute("lineWrappingIndentation", "4");
+        final String[] expected = {};
+        verify(checkConfig, new File("src/test/resources-noncompilable/com/puppycrawl/tools/"
+                + "checkstyle/indentation/InputLambda1.java").getCanonicalPath(),
+            expected);
     }
 }
