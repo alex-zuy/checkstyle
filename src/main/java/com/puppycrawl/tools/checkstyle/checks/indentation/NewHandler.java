@@ -83,6 +83,12 @@ public class NewHandler extends ExpressionHandler
         checkRParen(lparen, rparen);
     }
 
+//    @Override
+//    public IndentLevel suggestedChildLevel(ExpressionHandler child)
+//    {
+//        return getLevel();
+//    }
+
     @Override
     protected IndentLevel getLevelImpl()
     {

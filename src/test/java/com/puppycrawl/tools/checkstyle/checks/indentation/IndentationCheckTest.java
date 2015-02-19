@@ -958,6 +958,7 @@ public class IndentationCheckTest extends BaseCheckTestSupport
             createCheckConfig(IndentationCheck.class);
         checkConfig.addAttribute("basicOffset", "2");
         checkConfig.addAttribute("lineWrappingIndentation", "4");
+        checkConfig.addAttribute("forceStrictCondition", "true");
         final String[] expected = {};
         verify(checkConfig, new File("src/test/resources-noncompilable/com/puppycrawl/tools/"
                 + "checkstyle/indentation/InputLambda1.java").getCanonicalPath(),

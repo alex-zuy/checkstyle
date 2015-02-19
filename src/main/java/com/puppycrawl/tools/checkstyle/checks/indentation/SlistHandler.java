@@ -66,6 +66,20 @@ public class SlistHandler extends BlockParentHandler
     }
 
     @Override
+    public IndentLevel getLevelImpl()
+    {
+        if((getParent() instanceof NewHandler)
+            ||(getParent() instanceof MethodCallHandler))
+        {
+            return getParent().getLevel();
+        }
+        else
+        {
+            return super.getLevelImpl();
+        }
+    }
+
+    @Override
     protected DetailAST getNonlistChild()
     {
         // blocks always have either block children or they are transparent

@@ -139,12 +139,12 @@ public class InputLambda1 {
        .forEach(b -> System.out.println(b.name)); //indent:7 exp:8 VIOLATION
     
     IntStream.range(1, 4) //indent:4 exp:4
-    .mapToObj(i -> new Foo("Foo" + i)) //indent:8 exp:8
-    .peek(f -> IntStream.range(1, 4) //indent:8 exp:8
-      .mapToObj(i -> new Bar("Bar" + i + " <- " + f.name)) //indent:10 exp:12 VIOLATION
-        .forEach(f.bars::add)) //indent:12 exp:12
-    .flatMap(f -> f.bars.stream()) //indent:8 exp:8
-   .forEach(b -> System.out.println(b.name)); //indent:7 exp:8 VIOLATION
+        .mapToObj(i -> new Foo("Foo" + i)) //indent:8 exp:8
+        .peek(f -> IntStream.range(1, 4) //indent:8 exp:8
+          .mapToObj(i -> new Bar("Bar" + i + " <- " + f.name)) //indent:10 exp:12 VIOLATION
+            .forEach(f.bars::add)) //indent:12 exp:12
+        .flatMap(f -> f.bars.stream()) //indent:8 exp:8
+       .forEach(b -> System.out.println(b.name)); //indent:7 exp:8 VIOLATION
   }
 }
 
