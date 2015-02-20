@@ -151,11 +151,11 @@ public class MethodCallHandler extends ExpressionHandler
     public void checkIndentation()
     {
         final DetailAST exprNode = getMainAst().getParent();
-        if (exprNode.getParent().getType() != TokenTypes.LCURLY
-            && exprNode.getParent().getType() != TokenTypes.SLIST)
-        {
-            return;
-        }
+//        if (exprNode.getParent().getType() != TokenTypes.LCURLY
+//            && exprNode.getParent().getType() != TokenTypes.SLIST)
+//        {
+//            return;
+//        }
         final DetailAST methodName = getMainAst().getFirstChild();
         checkExpressionSubtree(methodName, getLevel(), false, false);
 
@@ -195,7 +195,11 @@ public class MethodCallHandler extends ExpressionHandler
     private static DetailAST getMethodCallLastNode(DetailAST firstNode)
     {
         DetailAST lastNode;
-        if (firstNode.getNextSibling() == null) {
+        DetailAST semicolonNode = firstNode.getParent().getNextSibling();
+        if(semicolonNode != null && semicolonNode.getType() == TokenTypes.SEMI) {
+            lastNode = semicolonNode;
+        }
+        else if (firstNode.getNextSibling() == null) {
             lastNode = firstNode.getLastChild();
         }
         else {

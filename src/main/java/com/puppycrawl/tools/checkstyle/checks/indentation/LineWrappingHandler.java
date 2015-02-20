@@ -25,6 +25,7 @@ import java.util.TreeMap;
 
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.api.Utils;
 
 /**
  * This class checks line-wrapping into definitions and expressions. The
@@ -88,7 +89,12 @@ public class LineWrappingHandler
      */
     protected int getCurrentIndentation()
     {
-        return firstNode.getColumnNo() + indentLevel;
+        if(startsLine(firstNode)) {
+            return firstNode.getColumnNo() + indentLevel;
+        }
+        else {
+            return getLineStart(firstNode) + indentLevel;
+        }
     }
 
     // Getters for private fields.
@@ -123,18 +129,19 @@ public class LineWrappingHandler
         // First node should be removed because it was already checked before.
         firstNodesOnLines.remove(firstNodesOnLines.firstKey());
         final int firstNodeIndent = getFirstNodeIndent(firstNode);
-        final int currentIndent = firstNodeIndent + indentLevel;
+        final int currentIndent = getCurrentIndentation();//firstNodeIndent + indentLevel;
 
         for (DetailAST node : firstNodesOnLines.values()) {
             final int currentType = node.getType();
-
-            if (currentType == TokenTypes.RCURLY
-                    || currentType == TokenTypes.RPAREN
-                    || currentType == TokenTypes.ARRAY_INIT)
-            {
-                logWarningMessage(node, firstNodeIndent);
-            }
-            else if (currentType == TokenTypes.LITERAL_IF) {
+//
+//            if (currentType == TokenTypes.RCURLY
+//                    || currentType == TokenTypes.RPAREN
+//                    || currentType == TokenTypes.ARRAY_INIT)
+//            {
+//                logWarningMessage(node, firstNodeIndent);
+//            }
+//            else 
+                if (currentType == TokenTypes.LITERAL_IF) {
                 final DetailAST parent = node.getParent();
 
                 if (parent.getType() == TokenTypes.LITERAL_ELSE) {
@@ -191,7 +198,9 @@ public class LineWrappingHandler
 
         while (curNode != null && curNode != lastNode) {
 
-            if (curNode.getType() == TokenTypes.OBJBLOCK) {
+            if (curNode != firstNode
+                && curNode.getType() == TokenTypes.OBJBLOCK
+                || curNode.getType() == TokenTypes.METHOD_CALL) {
                 curNode = curNode.getNextSibling();
             }
 
@@ -312,5 +321,67 @@ public class LineWrappingHandler
                         currentNode.getColumnNo(), currentIndent);
             }
         }
+    }
+
+    /**
+     * Determines if the given expression is at the start of a line.
+     *
+     * @param ast   the expression to check
+     *
+     * @return true if it is, false otherwise
+     */
+    private final boolean startsLine(DetailAST ast)
+    {
+        return getLineStart(ast) == expandedTabsColumnNo(ast);
+    }
+
+    /**
+     * Get the start of the line for the given expression.
+     *
+     * @param ast   the expression to find the start of the line for
+     *
+     * @return the start of the line for the given expression
+     */
+    private final int getLineStart(DetailAST ast)
+    {
+        final String line = indentCheck.getLine(ast.getLineNo() - 1);
+        return getLineStart(line);
+    }
+
+    /**
+     * Get the start of the specified line.
+     *
+     * @param line   the specified line number
+     *
+     * @return the start of the specified line
+     */
+    private final int getLineStart(String line)
+    {
+        for (int start = 0; start < line.length(); start++) {
+            final char c = line.charAt(start);
+
+            if (!Character.isWhitespace(c)) {
+                return Utils.lengthExpandedTabs(
+                    line, start, indentCheck.getIndentationTabWidth());
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Get the column number for the start of a given expression, expanding
+     * tabs out into spaces in the process.
+     *
+     * @param ast   the expression to find the start of
+     *
+     * @return the column number for the start of the expression
+     */
+    private final int expandedTabsColumnNo(DetailAST ast)
+    {
+        final String line =
+            indentCheck.getLine(ast.getLineNo() - 1);
+
+        return Utils.lengthExpandedTabs(line, ast.getColumnNo(),
+            indentCheck.getIndentationTabWidth());
     }
 }

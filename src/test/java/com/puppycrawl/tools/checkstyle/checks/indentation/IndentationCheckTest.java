@@ -947,4 +947,17 @@ public class IndentationCheckTest extends BaseCheckTestSupport
         verify(checkConfig, getPath("indentation/InputSwitchCustom.java"),
                expected);
     }
+    
+    @Test
+    public void testMethodCallChaining() throws Exception
+    {
+        final DefaultConfiguration checkConfig =
+                createCheckConfig(IndentationCheck.class);
+        checkConfig.addAttribute("basicOffset", "2");
+        checkConfig.addAttribute("lineWrappingIndentation", "4");
+        checkConfig.addAttribute("forceStrictCondition", "true");
+        final String[] expected = {};
+        verify(checkConfig, getPath("indentation/InputMethodCallChaining.java"),
+                expected);
+    }
 }
