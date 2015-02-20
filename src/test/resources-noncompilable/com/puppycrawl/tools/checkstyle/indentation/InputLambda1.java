@@ -34,6 +34,38 @@ public class InputLambda1 {
     Printer r6 = s -> System.out
         .print(s); //indent:8 ; exp:8; ok
 
+    Object o = new Thread(() -> { //indent:4 ; exp:4; ok
+      x.run(); //indent:6 ; exp:6; ok
+    }); //indent:4 ; exp:4; ok
+
+    Runnable r11 =
+        () -> { //indent:4 ; exp:4; ok
+          x.run(); //indent:6 ; exp:6; ok
+        }; //indent:4 ; exp:4; ok
+
+
+    Runnable r21 =
+        () -> { x.run(); };
+
+    Runnable r31 = 
+        () ->
+    x.run(); //indent:8 ; exp:8; ok
+
+    Runnable r41 =
+        () -> x.run();
+
+    Printer r51 = 
+        s -> System.out.print(s);
+
+    Printer r61 = 
+        s -> System.out
+            .print(s); //indent:8 ; exp:8; ok
+
+    Object o1 = new Thread(() -> { //indent:4 ; exp:4; ok
+      x.run(); //indent:6 ; exp:6; ok
+    }); //indent:4 ; exp:4; ok
+
+
     Printer[] manyRunnable = new Printer[]{
         s -> System.out.print(s), //indent:8 ; exp:6,8; ok
         s -> { System.out.print(s); }, //indent:8 ; exp:6,8; ok
@@ -42,19 +74,7 @@ public class InputLambda1 {
         s -> { //indent:8 ; exp:6,8; ok
           System.out.print(s); //indent:10 ; exp:10; ok
         }, //indent:8 ; exp:8; ok
-
-      s -> System.out.print(s), //indent:6 ; exp:6,8; ok
-      s -> { System.out.print(s); }, //indent:6 ; exp:6,8; ok
-      s -> System.out //indent:6 ; exp:6,8; ok
-          .print(s), //indent:10 ; exp:10; ok
-      s -> { //indent:6 ; exp:6,8; ok
-        System.out.print(s); //indent:8 ; exp:8; ok
-      } //indent:6 ; exp:6; ok
     };
-
-    Object o = new Thread(() -> { //indent:4 ; exp:4; ok
-      x.run(); //indent:6 ; exp:6; ok
-    }); //indent:4 ; exp:4; ok
   }
 
   void function3(Runnable x) {
@@ -62,7 +82,7 @@ public class InputLambda1 {
       x.run(); //indent: ; exp:; ok
     }); //indent: ; exp:; ok
   }
-    
+
   class Person {
     String name;
     int age;
@@ -147,4 +167,3 @@ public class InputLambda1 {
        .forEach(b -> System.out.println(b.name)); //indent:7 exp:8 VIOLATION
   }
 }
-

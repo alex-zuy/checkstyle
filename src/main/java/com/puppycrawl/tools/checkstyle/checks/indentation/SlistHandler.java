@@ -68,8 +68,7 @@ public class SlistHandler extends BlockParentHandler
     @Override
     public IndentLevel getLevelImpl()
     {
-        if((getParent() instanceof NewHandler)
-            ||(getParent() instanceof MethodCallHandler))
+        if((getParent() instanceof LambdaHandler))
         {
             return getParent().getLevel();
         }

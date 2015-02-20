@@ -191,7 +191,7 @@ public class LineWrappingHandler
 
         while (curNode != null && curNode != lastNode) {
 
-            if (curNode.getType() == TokenTypes.OBJBLOCK || curNode.getType() == TokenTypes.SLIST) {
+            if (curNode.getType() == TokenTypes.OBJBLOCK || curNode.getType() == TokenTypes.LAMBDA) {
                 curNode = curNode.getNextSibling();
             }
 
