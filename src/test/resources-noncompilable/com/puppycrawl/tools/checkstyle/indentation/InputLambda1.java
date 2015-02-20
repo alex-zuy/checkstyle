@@ -45,26 +45,31 @@ public class InputLambda1 {
 
 
     Runnable r21 =
-        () -> { x.run(); };
+        () -> { x.run(); }; //indent:8 exp:8; ok
 
     Runnable r31 = 
-        () ->
-    x.run(); //indent:8 ; exp:8; ok
+        () -> x //indent:8 exp:8; ok
+            .run(); //indent:12 exp:12; ok
 
     Runnable r41 =
-        () -> x.run();
+        () -> x.run(); //indent:8 exp:8; ok
 
     Printer r51 = 
-        s -> System.out.print(s);
+        s -> System.out.print(s); //indent:8 exp:8; ok
 
     Printer r61 = 
-        s -> System.out
-            .print(s); //indent:8 ; exp:8; ok
+        s -> System.out //indent:8 exp:8; ok
+            .print(s); //indent:12 exp:12; ok
 
-    Object o1 = new Thread(() -> { //indent:4 ; exp:4; ok
-      x.run(); //indent:6 ; exp:6; ok
-    }); //indent:4 ; exp:4; ok
+    Object o1 = new Thread(
+        () -> { //indent:8 exp:8; ok
+          x.run(); //indent:10 exp:10; ok
+        }); //indent:8 ; exp:8; ok
 
+    SomeInterface i1 = (LongTypeName
+        arg) -> { //indent:8 exp:8; ok
+          doSmth(arg); //indent:10 exp:10; ok
+        }; //indent:8 exp:8; ok
 
     Printer[] manyRunnable = new Printer[]{
         s -> System.out.print(s), //indent:8 ; exp:6,8; ok
