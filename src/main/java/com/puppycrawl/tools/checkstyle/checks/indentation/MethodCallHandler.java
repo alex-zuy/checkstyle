@@ -150,32 +150,19 @@ public class MethodCallHandler extends ExpressionHandler
     @Override
     public void checkIndentation()
     {
-        final DetailAST exprNode = getMainAst().getParent();
-        if (exprNode.getParent().getType() != TokenTypes.LCURLY
-            && exprNode.getParent().getType() != TokenTypes.SLIST)
-        {
-            return;
-        }
         final DetailAST methodName = getMainAst().getFirstChild();
         checkExpressionSubtree(methodName, getLevel(), false, false);
 
         final DetailAST lparen = getMainAst();
-        final DetailAST rparen = getMainAst().findFirstToken(TokenTypes.RPAREN);
         checkLParen(lparen);
-
-        if (rparen.getLineNo() == lparen.getLineNo()) {
-            return;
-        }
 
         checkExpressionSubtree(
             getMainAst().findFirstToken(TokenTypes.ELIST),
             new IndentLevel(getLevel(), getBasicOffset()),
             false, true);
 
-        checkRParen(lparen, rparen);
         final LineWrappingHandler lineWrap =
-            new LineWrappingHandler(getIndentCheck(), getMainAst(),
-                    getMethodCallLastNode(getMainAst()));
+            new MethodCallLineWrappingHandler(getIndentCheck(), getMainAst());
         lineWrap.checkIndentation();
     }
 
@@ -183,24 +170,5 @@ public class MethodCallHandler extends ExpressionHandler
     protected boolean shouldIncreaseIndent()
     {
         return false;
-    }
-
-    /**
-     * Returns method call right paren.
-     * @param firstNode
-     *          method call ast(TokenTypes.METHOD_CALL)
-     * @return ast node containing right paren for specified method call. If
-     * method calls are chained returns right paren for last call.
-     */
-    private static DetailAST getMethodCallLastNode(DetailAST firstNode)
-    {
-        DetailAST lastNode;
-        if (firstNode.getNextSibling() == null) {
-            lastNode = firstNode.getLastChild();
-        }
-        else {
-            lastNode = firstNode.getNextSibling();
-        }
-        return lastNode;
     }
 }

@@ -49,15 +49,14 @@ public class MemberDefHandler extends ExpressionHandler
         if (modifiersNode.getChildCount() != 0) {
             checkModifiers();
         }
-        else {
+        else if (getMainAst().getParent().getType() != TokenTypes.FOR_INIT) {
             checkType();
         }
         final LineWrappingHandler lineWrap =
-            new LineWrappingHandler(getIndentCheck(), getMainAst(),
-                getVarDefStatementSemicolon(getMainAst()));
-        if (lineWrap.getLastNode() != null && !isArrayDeclaration(getMainAst())) {
-            lineWrap.checkIndentation();
-        }
+            new RangedLineWrapHandler(getIndentCheck(), getMainAst(),
+                getMainAst().getFirstChild(),
+                getMainAst().getLastChild());
+        lineWrap.checkIndentation();
     }
 
     @Override
@@ -88,31 +87,5 @@ public class MemberDefHandler extends ExpressionHandler
         if (startsLine(ident) && !getLevel().accept(columnNo)) {
             logError(ident, "type", columnNo);
         }
-    }
-
-    /**
-     * Checks if variable_def node is array declaration.
-     * @param variableDef current variable_def.
-     * @return true if variable_def node is array declaration.
-     */
-    private boolean isArrayDeclaration(DetailAST variableDef)
-    {
-        return variableDef.findFirstToken(TokenTypes.TYPE)
-            .findFirstToken(TokenTypes.ARRAY_DECLARATOR) != null;
-    }
-
-    /**
-     * Returns semicolon for variable definition statement.
-     * @param variableDef
-     *          ast node of type TokenTypes.VARIABLE_DEF
-     * @return ast node of type TokenTypes.SEMI
-     */
-    private static DetailAST getVarDefStatementSemicolon(DetailAST variableDef)
-    {
-        DetailAST lastNode = variableDef.getLastChild();
-        if (lastNode.getType() != TokenTypes.SEMI) {
-            lastNode = variableDef.getNextSibling();
-        }
-        return lastNode;
     }
 }

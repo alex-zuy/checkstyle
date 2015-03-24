@@ -14,7 +14,7 @@ import java.util.Arrays; //indent:0 exp:0
  * tabWidth = 4                                                               //indent:1 exp:1
  * throwsIndent = 4                                                           //indent:1 exp:1
  *                                                                            //indent:1 exp:1
- * @author  jrichard                                                          //indent:1 exp:1
+ * @author  jrichard                                                         //indent:1 exp:1
  */                                                                           //indent:1 exp:1
 public class InputValidMethodIndent extends java.awt.event.MouseAdapter implements java.awt.event.MouseListener { //indent:0 exp:0
 
@@ -145,11 +145,11 @@ public class InputValidMethodIndent extends java.awt.event.MouseAdapter implemen
 
         System.out.println("methods are: " + Arrays.asList( //indent:8 exp:8
             new String[] {"method"} //indent:12 exp:>=12
-        ).toString()); //indent:8 exp:8
+            ).toString()); //indent:12 exp:12
 
         System.out.println("methods are: " + Arrays.asList( //indent:8 exp:8
             new String[] {"method"}).toString() //indent:12 exp:>=12
-        ); //indent:8 exp:8
+            ); //indent:12 exp:12
 
 
         myfunc2(3, 4, 5,  //indent:8 exp:8

@@ -24,6 +24,7 @@ import static com.puppycrawl.tools.checkstyle.checks.indentation.ExpressionHandl
 import static com.puppycrawl.tools.checkstyle.checks.indentation.ExpressionHandler.MSG_ERROR_MULTI;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -267,10 +268,11 @@ public class IndentationCheckTest extends BaseCheckTestSupport
         checkConfig.addAttribute("tabWidth", "4");
         checkConfig.addAttribute("throwsIndent", "4");
         final String[] expected = {
+            "51: " + getCheckMessage(MSG_ERROR, "0", 18, 20),
             "51: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 18, 20),
-            "52: " + getCheckMessage(MSG_ERROR, "method call rparen", 14, 16),
+            "52: " + getCheckMessage(MSG_ERROR, ")", 14, 20),
         };
-        verifyWarns(checkConfig, getPath("indentation/InputMethodCallLineWrap.java"), expected);
+        verifyWarns(checkConfig, getPath("indentation/InputMethodCallLineWrap.java"), expected, 1);
     }
 
     @Test
@@ -338,7 +340,7 @@ public class IndentationCheckTest extends BaseCheckTestSupport
         checkConfig.addAttribute("basicOffset", "2");
         checkConfig.addAttribute("braceAdjustment", "0");
         checkConfig.addAttribute("caseIndent", "4");
-        checkConfig.addAttribute("forceStrictCondition", "false");
+        checkConfig.addAttribute("forceStrictCondition", "true");
         checkConfig.addAttribute("lineWrappingIndentation", "4");
         checkConfig.addAttribute("tabWidth", "4");
         checkConfig.addAttribute("throwsIndent", "4");
@@ -426,13 +428,11 @@ public class IndentationCheckTest extends BaseCheckTestSupport
         checkConfig.addAttribute("basicOffset", "2");
         checkConfig.addAttribute("braceAdjustment", "0");
         checkConfig.addAttribute("caseIndent", "4");
-        checkConfig.addAttribute("forceStrictCondition", "false");
+        checkConfig.addAttribute("forceStrictCondition", "true");
         checkConfig.addAttribute("lineWrappingIndentation", "4");
         checkConfig.addAttribute("tabWidth", "4");
         checkConfig.addAttribute("throwsIndent", "4");
         final String[] expected = {
-            "22: " + getCheckMessage(MSG_ERROR, "=", 5, 6),
-            "57: " + getCheckMessage(MSG_ERROR, "class def rcurly", 3, 2),
         };
 
         verifyWarns(checkConfig, getPath("indentation/InputMembers.java"), expected);
@@ -457,9 +457,11 @@ public class IndentationCheckTest extends BaseCheckTestSupport
             "36: " + getCheckMessage(MSG_CHILD_ERROR_MULTI, "label", 18, "8, 12"),
             "37: " + getCheckMessage(MSG_CHILD_ERROR, "ctor def", 18, 8),
             "39: " + getCheckMessage(MSG_CHILD_ERROR_MULTI, "label", 6, "8, 12"),
+            "39: " + getCheckMessage(MSG_CHILD_ERROR_MULTI, "method call", 6, "8, 12"),
             "41: " + getCheckMessage(MSG_CHILD_ERROR_MULTI, "label", 6, "8, 12"),
+            "41: " + getCheckMessage(MSG_CHILD_ERROR_MULTI, "method call", 6, "8, 12"),
         };
-        verifyWarns(checkConfig, getPath("indentation/InputInvalidLabelIndent.java"), expected);
+        verifyWarns(checkConfig, getPath("indentation/InputInvalidLabelIndent.java"), expected, 2);
     }
 
     @Test
@@ -495,7 +497,6 @@ public class IndentationCheckTest extends BaseCheckTestSupport
         checkConfig.addAttribute("throwsIndent", "4");
         final String fname = getPath("indentation/InputValidIfIndent.java");
         final String[] expected = {
-            "231: " + getCheckMessage(MSG_ERROR, "(", 8, 12),
         };
         verifyWarns(checkConfig, fname, expected);
     }
@@ -581,16 +582,24 @@ public class IndentationCheckTest extends BaseCheckTestSupport
             "100: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
             "101: " + getCheckMessage(MSG_ERROR, "if rcurly", 6, 8),
             "104: " + getCheckMessage(MSG_ERROR, "Arrays", 10, 12),
+            "104: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
+            "110: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 14, 16),
+            "110: " + getCheckMessage(MSG_ERROR, "new", 14, 16),
             "113: " + getCheckMessage(MSG_ERROR, "+", 10, 12),
             "113: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
+            "118: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 14, 16),
+            "118: " + getCheckMessage(MSG_ERROR, "new", 14, 16),
+            "122: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
             "122: " + getCheckMessage(MSG_ERROR, "new", 10, 12),
+            "126: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
             "126: " + getCheckMessage(MSG_ERROR, "new", 10, 12),
-            "127: " + getCheckMessage(MSG_ERROR, ")", 6, 8),
-            "131: " + getCheckMessage(MSG_ERROR, "method call rparen", 6, 8),
+            "127: " + getCheckMessage(MSG_ERROR, ")", 6, 12),
+            "131: " + getCheckMessage(MSG_ERROR, ")", 6, 12),
             "145: " + getCheckMessage(MSG_ERROR, "6", 10, 12),
             "145: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
             "148: " + getCheckMessage(MSG_ERROR, "6", 10, 12),
             "148: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
+            "158: " + getCheckMessage(MSG_ERROR, ".", 6, 12),
             "158: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 6, 12),
             "170: " + getCheckMessage(MSG_CHILD_ERROR, "method def", 4, 8),
             "175: " + getCheckMessage(MSG_CHILD_ERROR, "method def", 4, 8),
@@ -598,7 +607,7 @@ public class IndentationCheckTest extends BaseCheckTestSupport
             "180: " + getCheckMessage(MSG_ERROR, "method9", 4, 8),
             "190: " + getCheckMessage(MSG_CHILD_ERROR, "method def", 12, 8),
         };
-        verifyWarns(checkConfig, fname, expected, 6);
+        verifyWarns(checkConfig, fname, expected, 12);
     }
 
     @Test
@@ -743,7 +752,7 @@ public class IndentationCheckTest extends BaseCheckTestSupport
             "66: " + getCheckMessage(MSG_ERROR_MULTI, "array initialization rcurly", 2, "6, 10"),
             "69: " + getCheckMessage(MSG_CHILD_ERROR, "array initialization", 6, 8),
             "76: " + getCheckMessage(MSG_CHILD_ERROR, "array initialization", 10, 12),
-            "89: " + getCheckMessage(MSG_ERROR, "1", 8, 12),
+            //"89: " + getCheckMessage(MSG_ERROR, "1", 8, 12),
             "89: " + getCheckMessage(MSG_CHILD_ERROR, "array initialization", 8, 12),
             "100: " + getCheckMessage(MSG_CHILD_ERROR, "array initialization", 10, 12),
             "101: " + getCheckMessage(MSG_CHILD_ERROR, "array initialization", 14, 12),
@@ -1013,9 +1022,11 @@ public class IndentationCheckTest extends BaseCheckTestSupport
             "132: " + getCheckMessage(MSG_CHILD_ERROR, "if", 10, 12),
             "132: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
             "137: " + getCheckMessage(MSG_CHILD_ERROR, "if", 14, 12),
+            "138: " + getCheckMessage(MSG_ERROR, "getProperty", 10, 18),
             "138: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
             "140: " + getCheckMessage(MSG_CHILD_ERROR, "else", 10, 12),
             "140: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
+            "141: " + getCheckMessage(MSG_ERROR, "getProperty", 8, 14),
             "141: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 8, 12),
 
             "148: " + getCheckMessage(MSG_CHILD_ERROR, "if", 16, 12),
@@ -1048,18 +1059,17 @@ public class IndentationCheckTest extends BaseCheckTestSupport
             "207: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
             "209: " + getCheckMessage(MSG_CHILD_ERROR, "if", 10, 12),
             "209: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
+            "216: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
 
             "225: " + getCheckMessage(MSG_ERROR, "if", 10, 12),
             "229: " + getCheckMessage(MSG_CHILD_ERROR, "if", 18, 20),
             "229: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 18, 20),
             "233: " + getCheckMessage(MSG_ERROR, "if rcurly", 40, 8),
-            "240: " + getCheckMessage(MSG_ERROR, "if rparen", 10, 8),
-            "245: " + getCheckMessage(MSG_ERROR, "if rparen", 6, 8),
-            "251: " + getCheckMessage(MSG_ERROR, "(", 6, 12),
-            "251: " + getCheckMessage(MSG_ERROR, "if lparen", 6, 8),
-            "253: " + getCheckMessage(MSG_ERROR, "if rparen", 6, 8),
+            "240: " + getCheckMessage(MSG_ERROR, ")", 10, 12),
+            "245: " + getCheckMessage(MSG_ERROR, ")", 6, 12),
+            "252: " + getCheckMessage(MSG_ERROR, ")", 6, 12),
         };
-        verifyWarns(checkConfig, fname, expected, 11);
+        verifyWarns(checkConfig, fname, expected, 12);
     }
 
     @Test
@@ -1103,15 +1113,19 @@ public class IndentationCheckTest extends BaseCheckTestSupport
             "56: " + getCheckMessage(MSG_CHILD_ERROR, "while", 14, 12),
             "57: " + getCheckMessage(MSG_ERROR, "while rcurly", 10, 8),
 
+            "60: " + getCheckMessage(MSG_ERROR, "&&", 10, 12),
             "60: " + getCheckMessage(MSG_CHILD_ERROR, "while", 10, 12),
+            "66: " + getCheckMessage(MSG_ERROR, "&&", 10, 12),
             "66: " + getCheckMessage(MSG_CHILD_ERROR, "while", 10, 12),
+            "71: " + getCheckMessage(MSG_ERROR, "&&", 10, 12),
             "71: " + getCheckMessage(MSG_CHILD_ERROR, "while", 10, 12),
-            "78: " + getCheckMessage(MSG_ERROR, "while rparen", 5, 8),
-            "85: " + getCheckMessage(MSG_ERROR, "while rparen", 10, 8),
-            "92: " + getCheckMessage(MSG_ERROR, "while rparen", 10, 8),
+            "78: " + getCheckMessage(MSG_ERROR, ")", 5, 12),
+
+            "85: " + getCheckMessage(MSG_ERROR, ")", 10, 12),
+            "92: " + getCheckMessage(MSG_ERROR, ")", 10, 12),
             "99: " + getCheckMessage(MSG_CHILD_ERROR, "while", 8, 12),
         };
-        verifyWarns(checkConfig, fname, expected);
+        verifyWarns(checkConfig, fname, expected, 3);
     }
 
     @Test
@@ -1137,7 +1151,6 @@ public class IndentationCheckTest extends BaseCheckTestSupport
             "31: " + getCheckMessage(MSG_ERROR, "for rcurly", 6, 8),
             "35: " + getCheckMessage(MSG_CHILD_ERROR, "for", 10, 12),
             "35: " + getCheckMessage(MSG_CHILD_ERROR, "method call", 10, 12),
-
             "36: " + getCheckMessage(MSG_ERROR, "for rcurly", 10, 8),
             "39: " + getCheckMessage(MSG_ERROR, "for lcurly", 10, 8),
             "40: " + getCheckMessage(MSG_CHILD_ERROR, "for", 10, 12),
@@ -1145,21 +1158,17 @@ public class IndentationCheckTest extends BaseCheckTestSupport
             "48: " + getCheckMessage(MSG_CHILD_ERROR, "for", 10, 12),
             "48: " + getCheckMessage(MSG_ERROR, "i", 10, 12),
             "54: " + getCheckMessage(MSG_ERROR, "for", 7, 8),
-
+            "55: " + getCheckMessage(MSG_ERROR, "VARIABLE_DEF", 10, 11),
             "55: " + getCheckMessage(MSG_CHILD_ERROR, "for", 10, 12),
-            "55: " + getCheckMessage(MSG_ERROR, "int", 10, 11),
-            "55: " + getCheckMessage(MSG_ERROR, "member def type", 10, 12),
             "64: " + getCheckMessage(MSG_CHILD_ERROR, "for", 7, 12),
             "64: " + getCheckMessage(MSG_ERROR, "i", 7, 12),
-
             "69: " + getCheckMessage(MSG_ERROR, "for", 6, 8),
             "70: " + getCheckMessage(MSG_CHILD_ERROR, "for", 10, 12),
             "71: " + getCheckMessage(MSG_CHILD_ERROR, "for", 14, 16),
             "72: " + getCheckMessage(MSG_CHILD_ERROR, "for", 10, 12),
             "77: " + getCheckMessage(MSG_ERROR, "for rcurly", 39, 8),
-            "81: " + getCheckMessage(MSG_ERROR, "for rparen", 12, 8),
         };
-        verifyWarns(checkConfig, fname, expected, 6);
+        verifyWarns(checkConfig, fname, expected, 5);
     }
 
     @Test
@@ -1491,5 +1500,114 @@ public class IndentationCheckTest extends BaseCheckTestSupport
         final String[] expected = {};
         verifyWarns(checkConfig, getPath("indentation/InputSwitchCustom.java"),
                expected);
+    }
+
+    @Test
+    public void testValidLineWrapping() throws Exception
+    {
+        final DefaultConfiguration checkConfig =
+            createCheckConfig(IndentationCheck.class);
+        checkConfig.addAttribute("arrayInitIndent", "4");
+        checkConfig.addAttribute("basicOffset", "2");
+        checkConfig.addAttribute("braceAdjustment", "0");
+        checkConfig.addAttribute("caseIndent", "4");
+        checkConfig.addAttribute("forceStrictCondition", "true");
+        checkConfig.addAttribute("lineWrappingIndentation", "4");
+        checkConfig.addAttribute("tabWidth", "4");
+        checkConfig.addAttribute("throwsIndent", "4");
+        final String[] expected = {};
+        verifyWarns(checkConfig, getPath("indentation/InputValidLineWrapping.java"),
+            expected);
+    }
+
+    @Test
+    public void testInvalidLineWrapping() throws Exception
+    {
+        final DefaultConfiguration checkConfig =
+            createCheckConfig(IndentationCheck.class);
+        checkConfig.addAttribute("arrayInitIndent", "4");
+        checkConfig.addAttribute("basicOffset", "2");
+        checkConfig.addAttribute("braceAdjustment", "0");
+        checkConfig.addAttribute("caseIndent", "4");
+        checkConfig.addAttribute("forceStrictCondition", "true");
+        checkConfig.addAttribute("lineWrappingIndentation", "4");
+        checkConfig.addAttribute("tabWidth", "4");
+        checkConfig.addAttribute("throwsIndent", "4");
+        final String[] expected = {
+            "21: " + getCheckMessage(MSG_ERROR, "InputInvalidLineWrapping", 5, 6),
+            "25: " + getCheckMessage(MSG_ERROR, "arg", 5, 6),
+            "30: " + getCheckMessage(MSG_ERROR, "String", 9, 10),
+            "32: " + getCheckMessage(MSG_ERROR, ",", 9, 10),
+            "37: " + getCheckMessage(MSG_ERROR, "Integer", 5, 6),
+            "42: " + getCheckMessage(MSG_ERROR, "void", 5, 6),
+            "49: " + getCheckMessage(MSG_ERROR, "method2", 5, 6),
+            "53: " + getCheckMessage(MSG_ERROR, "arg", 5, 6),
+            "58: " + getCheckMessage(MSG_ERROR, "final", 5, 6),
+            "61: " + getCheckMessage(MSG_ERROR, "\"hello\"", 5, 6),
+            "64: " + getCheckMessage(MSG_ERROR, "=", 5, 6),
+            "67: " + getCheckMessage(MSG_ERROR, "=", 5, 6),
+            "69: " + getCheckMessage(MSG_ERROR, "+", 5, 6),
+            "73: " + getCheckMessage(MSG_ERROR, "3", 5, 6),
+            "76: " + getCheckMessage(MSG_ERROR, ".", 5, 6),
+            "80: " + getCheckMessage(MSG_ERROR, ")", 5, 6),
+            "84: " + getCheckMessage(MSG_ERROR, "\"12\"", 9, 10),
+            "90: " + getCheckMessage(MSG_ERROR, ")", 9, 10),
+            "91: " + getCheckMessage(MSG_ERROR, ")", 7, 6),
+            "96: " + getCheckMessage(MSG_ERROR, "+", 9, 10),
+            "98: " + getCheckMessage(MSG_ERROR, ")", 9, 10),
+            "104: " + getCheckMessage(MSG_ERROR, "Math", 7, 8),
+            "105: " + getCheckMessage(MSG_ERROR, "Integer", 10, 11),
+            "106: " + getCheckMessage(MSG_ERROR, "\"12\"", 16, 14),
+            "107: " + getCheckMessage(MSG_ERROR, "Integer", 10, 11),
+            "108: " + getCheckMessage(MSG_ERROR, "\"14\"", 16, 14),
+            "109: " + getCheckMessage(MSG_ERROR, ")", 12, 11),
+            "115: " + getCheckMessage(MSG_ERROR, "var2", 7, 8),
+            "119: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+            "121: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+            "128: " + getCheckMessage(MSG_ERROR, "'a'", 11, 12),
+            "132: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+            "135: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+            "139: " + getCheckMessage(MSG_ERROR, "out", 7, 8),
+            "144: " + getCheckMessage(MSG_ERROR, "println", 7, 8),
+            "148: " + getCheckMessage(MSG_ERROR, "println", 7, 8),
+            "151: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+            "154: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+            "157: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+            "160: " + getCheckMessage(MSG_ERROR, ")", 7, 8),
+            "165: " + getCheckMessage(MSG_ERROR, "VARIABLE_DEF", 7, 8),
+            "170: " + getCheckMessage(MSG_ERROR, "i", 7, 8),
+            "176: " + getCheckMessage(MSG_ERROR, "i", 7, 8),
+            "182: " + getCheckMessage(MSG_ERROR, "Integer", 7, 8),
+            "188: " + getCheckMessage(MSG_ERROR, "\"12\"", 11, 12),
+            "191: " + getCheckMessage(MSG_CHILD_ERROR, "for", 7, 8),
+            "191: " + getCheckMessage(MSG_ERROR, "i", 7, 8),
+            "198: " + getCheckMessage(MSG_ERROR, ".", 11, 12),
+            "199: " + getCheckMessage(MSG_ERROR, "\"12\"", 16, 15),
+            "210: " + getCheckMessage(MSG_ERROR, "cond", 7, 8),
+            "216: " + getCheckMessage(MSG_ERROR, ")", 7, 8),
+            "224: " + getCheckMessage(MSG_ERROR, "cond", 7, 8),
+            "228: " + getCheckMessage(MSG_ERROR, "cond", 7, 8),
+            "234: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+            "238: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+            "240: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+            "244: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+            "246: " + getCheckMessage(MSG_ERROR, "Arrays", 7, 8),
+            "247: " + getCheckMessage(MSG_ERROR, "Arrays", 7, 8),
+            "251: " + getCheckMessage(MSG_ERROR, "Integer", 5, 6),
+            "255: " + getCheckMessage(MSG_ERROR, ".", 7, 8),
+        };
+        verifyWarns(checkConfig, getPath("indentation/InputInvalidLineWrapping.java"),
+            expected, 1);
+    }
+
+    @Test
+    public void testNew() throws Exception
+    {
+        final DefaultConfiguration checkConfig = createCheckConfig(IndentationCheck.class);
+        final String[] expected = {
+
+        };
+        verify(checkConfig, new File("src/test/resources-noncompilable/com/puppycrawl/tools/"
+                + "checkstyle/indentation/NewHandlerTestInput.java").getCanonicalPath(), expected);
     }
 }

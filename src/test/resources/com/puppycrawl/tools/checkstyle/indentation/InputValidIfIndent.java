@@ -50,7 +50,7 @@ public class InputValidIfIndent { //indent:0 exp:0
         } //indent:8 exp:8
 
 
-        // lcurly for if and else on same line -- mixed braces //indent:8 exp:8
+        // lcurly for if and else on same line -- mixed braces c //indent:8 exp:8
         if (test) //indent:8 exp:8
         { //indent:8 exp:8
         } else //indent:8 exp:8
@@ -217,25 +217,24 @@ public class InputValidIfIndent { //indent:0 exp:0
         boolean test = true; //indent:8 exp:8
 
         if (test //indent:8 exp:8
-        ) { //indent:8 exp:8
+            ) { //indent:12 exp:>=12
             System.getProperty("blah"); //indent:12 exp:12
         } //indent:8 exp:8
 
         if (test //indent:8 exp:8
-        ) //indent:8 exp:8
+            ) //indent:12 exp:>=12
         { //indent:8 exp:8
             System.getProperty("blah"); //indent:12 exp:12
         } //indent:8 exp:8
 
-        if //indent:8 exp:8
-        ( //indent:8 exp:12 warn
-            test //indent:12 exp:12
-        ) { //indent:8 exp:8
+        if( //indent:8 exp:8
+            test //indent:12 exp:>=12
+            ) { //indent:12 exp:>=12
             System.getProperty("blah"); //indent:12 exp:12
         } //indent:8 exp:8
 
         if (test //indent:8 exp:8
-            ) //indent:12 exp:12
+            ) //indent:12 exp:>=12
         { //indent:8 exp:8
         } //indent:8 exp:8
     } //indent:4 exp:4

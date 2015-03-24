@@ -49,32 +49,32 @@ public class InputValidForIndent { //indent:0 exp:0
         } //indent:8 exp:8
 
         for ( //indent:8 exp:8
-            int i=0; //indent:12 exp:12
-            i<10; //indent:12 exp:12
-            i++) //indent:12 exp:12
+            int i=0; //indent:12 exp:>=12
+            i<10; //indent:12 exp:>=12
+            i++) //indent:12 exp:>=12
         { //indent:8 exp:8
         } //indent:8 exp:8
 
         for (int i=0; //indent:8 exp:8
-            i<10 && 4<5 //indent:12 exp:12
-                && 7<8; //indent:16 exp:16
-            i++) //indent:12 exp:12
+            i<10 && 4<5 //indent:12 exp:>=12
+                && 7<8; //indent:16 exp:>=12
+            i++) //indent:12 exp:>=12
         { //indent:8 exp:8
         } //indent:8 exp:8
 
         for (int i=0; i<10 && 4<5 //indent:8 exp:8
                 && 7<8; //indent:16 exp:>=12
-            i++) { //indent:12 exp:12
+            i++) { //indent:12 exp:>=12
         } //indent:8 exp:8
 
         for (int i=0; i<10 && 4<5 && 7<8; //indent:8 exp:8
-            i++) { //indent:12 exp:12
+            i++) { //indent:12 exp:>=12
         } //indent:8 exp:8
 
 
         for (int i=0; //indent:8 exp:8
-            i<10; i++ //indent:12 exp:12
-        ) { //indent:8 exp:8
+            i<10; i++ //indent:12 exp:>=12
+            ) { //indent:12 exp:>=12
             System.getProperty("foo"); //indent:12 exp:12
         } //indent:8 exp:8
 

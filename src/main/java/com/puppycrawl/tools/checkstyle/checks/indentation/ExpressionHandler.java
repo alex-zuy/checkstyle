@@ -436,7 +436,7 @@ public abstract class ExpressionHandler
         IndentLevel level,
         boolean firstLineMatches,
         boolean allowNesting
-    )
+        )
     {
         final LineSet subtreeLines = new LineSet();
         final int firstLine = getFirstLine(Integer.MAX_VALUE, tree);
@@ -598,34 +598,6 @@ public abstract class ExpressionHandler
     protected final int getBraceAdjustement()
     {
         return getIndentCheck().getBraceAdjustement();
-    }
-
-    /**
-     * Check the indentation of the right parenthesis.
-     * @param rparen parenthesis to check
-     * @param lparen left parenthesis associated with aRparen
-     */
-    protected final void checkRParen(DetailAST lparen, DetailAST rparen)
-    {
-        // no paren - no check :)
-        if (rparen == null) {
-            return;
-        }
-
-        // the rcurly can either be at the correct indentation,
-        // or not first on the line ...
-        final int rparenLevel = expandedTabsColumnNo(rparen);
-        if (getLevel().accept(rparenLevel) || !startsLine(rparen)) {
-            return;
-        }
-
-        // or has <lparen level> + 1 indentation
-        final int lparenLevel = expandedTabsColumnNo(lparen);
-        if (rparenLevel == lparenLevel + 1) {
-            return;
-        }
-
-        logError(rparen, "rparen", rparenLevel);
     }
 
     /**

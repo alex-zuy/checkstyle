@@ -91,7 +91,9 @@ public class ClassDefHandler extends BlockParentHandler
         }
 
         final LineWrappingHandler lineWrap =
-            new LineWrappingHandler(getIndentCheck(), getMainAst(), getMainAst().getLastChild());
+            new RangedLineWrapHandler(getIndentCheck(), getMainAst(),
+                    getMainAst().getFirstChild(),
+                    getMainAst().getLastChild().getPreviousSibling());
         lineWrap.checkIndentation();
         super.checkIndentation();
     }

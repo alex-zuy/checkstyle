@@ -55,6 +55,10 @@ public class DoWhileHandler extends BlockParentHandler
     @Override
     public void checkIndentation()
     {
+        final LineWrappingHandler conditionWrap =
+            new ParenthesisLineWrappingHandler(getIndentCheck(), getMainAst());
+        conditionWrap.checkIndentation();
+
         super.checkIndentation();
         checkCondExpr();
     }

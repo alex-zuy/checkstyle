@@ -269,16 +269,6 @@ public class BlockParentHandler extends ExpressionHandler
     }
 
     /**
-     * Get the right parenthesis portion of the expression we are handling.
-     *
-     * @return the right parenthis expression
-     */
-    protected DetailAST getRParen()
-    {
-        return getMainAst().findFirstToken(TokenTypes.RPAREN);
-    }
-
-    /**
      * Get the left parenthesis portion of the expression we are handling.
      *
      * @return the left parenthis expression
@@ -294,7 +284,7 @@ public class BlockParentHandler extends ExpressionHandler
         checkToplevelToken();
         // seperate to allow for eventual configuration
         checkLParen(getLParen());
-        checkRParen(getLParen(), getRParen());
+        //checkRParen(getLParen(), getRParen());
         if (hasCurlys()) {
             checkLCurly();
             checkRCurly();

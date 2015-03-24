@@ -22,31 +22,27 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
- * This class checks line wrapping for method call statements.
- * @author pirat9600q
+ * Checks line wrapping indentation of subtrees which lie within parenthesis.
  *
+ * @author pirat9600q
  */
-public class MethodCallLineWrapHandler extends LineWrappingHandler
+public class ParenthesisLineWrappingHandler extends RangedLineWrapHandler
 {
     /**
-     * Creates new instance of MethodCallLineWrapHandler.
+     * Creates instance of ParenthesisLineWrappingHandler.
      * @param instance instance of IndentationCheck.
-     * @param firstNode first node of method call statement.
-     * @param lastNode last node of method call statement.
+     * @param baseNode base node which is parent of parenthesis.
      */
-    public MethodCallLineWrapHandler(IndentationCheck instance,
-        DetailAST firstNode, DetailAST lastNode)
+    public ParenthesisLineWrappingHandler(IndentationCheck instance, DetailAST baseNode)
     {
-        super(instance, firstNode, lastNode);
+        super(instance, baseNode,
+            baseNode.findFirstToken(TokenTypes.LPAREN),
+            baseNode.findFirstToken(TokenTypes.RPAREN));
     }
 
     @Override
     protected int getCurrentIndentation()
     {
-        DetailAST curNode = getFirstNode();
-        while (curNode.getType() != TokenTypes.IDENT) {
-            curNode = curNode.getFirstChild();
-        }
-        return curNode.getColumnNo() + getIndentLevel();
+        return getLineStart(getFirstNode()) + getLineWrappingIndent();
     }
 }

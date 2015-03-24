@@ -57,39 +57,39 @@ public class InputInvalidWhileIndent { //indent:0 exp:0
           } //indent:10 exp:8 warn
 
         while (test  //indent:8 exp:8
-          && 4 < 7 && 8 < 9 //indent:10 exp:12 warn
+          && 4 < 7 && 8 < 9 //indent:10 exp:>=12 warn
             && 3 < 4) { //indent:12 exp:>=12
         } //indent:8 exp:8
 
         while (test  //indent:8 exp:8
             && 4 < 7 && 8 < 9 //indent:12 exp:>=12
-          && 3 < 4) { //indent:10 exp:12 warn
+          && 3 < 4) { //indent:10 exp:>=12 warn
         } //indent:8 exp:8
 
         while (test  //indent:8 exp:8
             && 4 < 7 && 8 < 9 //indent:12 exp:>=12
-          && 3 < 4)  //indent:10 exp:12 warn
+          && 3 < 4)  //indent:10 exp:>=12 warn
         { //indent:8 exp:8
         } //indent:8 exp:8
 
         while (test  //indent:8 exp:8
             && 4 < 7 && 8 < 9 //indent:12 exp:>=12
             && 3 < 4 //indent:12 exp:>=12
-     ) { //indent:5 exp:8 warn
+     ) { //indent:5 exp:>=12 warn
 
         } //indent:8 exp:8
 
         while (test  //indent:8 exp:8
             && 4 < 7 && 8 < 9 //indent:12 exp:>=12
             && 3 < 4 //indent:12 exp:>=12
-          ) { //indent:10 exp:8 warn
+          ) { //indent:10 exp:>=12 warn
 
         } //indent:8 exp:8
 
         while (test  //indent:8 exp:8
             && 4 < 7 && 8 < 9 //indent:12 exp:>=12
             && 3 < 4 //indent:12 exp:>=12
-          )  //indent:10 exp:8 warn
+          )  //indent:10 exp:>=12 warn
         { //indent:8 exp:8
 
         } //indent:8 exp:8

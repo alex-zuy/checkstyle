@@ -61,26 +61,28 @@ public class NewHandler extends ExpressionHandler
             return;
         }
 
-        if (getMainAst().getType() != TokenTypes.OBJBLOCK) {
-            return;
-        }
+//        final DetailAST leftParen = getLParen();
+//        final DetailAST rightParen = getRParen();
+//        final LineWrappingHandler parameterListWrap =
+//            new RangedLineWrapHandler(getIndentCheck(), getMainAst(),
+//                leftParen, rightParen)
+//        {
+//            @Override
+//            protected int getCurrentIndentation()
+//            {
+//                return getLineStart(getBaseNode().getFirstChild())
+//                    + getLineWrappingIndent();
+//            }
+//        };
+//        parameterListWrap.checkIndentation();
+        final LineWrappingHandler lineWrap =
+            new ParenthesisLineWrappingHandler(getIndentCheck(), getMainAst());
+        lineWrap.checkIndentation();
 
-        // if this method name is on the same line as a containing
-        // method, don't indent, this allows expressions like:
-        //    method("my str" + method2(
-        //        "my str2"));
-        // as well as
-        //    method("my str" +
-        //        method2(
-        //            "my str2"));
-        //
-
-        checkExpressionSubtree(
-            getMainAst().findFirstToken(TokenTypes.ELIST),
-            new IndentLevel(getLevel(), getBasicOffset()),
-            false, true);
-
-        checkRParen(lparen, rparen);
+        final LineWrappingHandler newClassNameWrapping =
+            new SubrangeLineWrappingHandler(getIndentCheck(), getMainAst(),
+                getMainAst().getFirstChild());
+        newClassNameWrapping.checkIndentation();
     }
 
     @Override
@@ -99,4 +101,25 @@ public class NewHandler extends ExpressionHandler
     {
         return false;
     }
+
+    /**
+     * Get the left parenthesis portion of the expression we are handling.
+     *
+     * @return the left parenthis expression
+     */
+    protected DetailAST getLParen()
+    {
+        return getMainAst().findFirstToken(TokenTypes.LPAREN);
+    }
+
+    /**
+     * Get the right parenthesis portion of the expression we are handling.
+     *
+     * @return the right parenthis expression
+     */
+    protected DetailAST getRParen()
+    {
+        return getMainAst().findFirstToken(TokenTypes.RPAREN);
+    }
+
 }

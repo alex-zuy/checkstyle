@@ -52,7 +52,7 @@ public class InputInvalidForIndent { //indent:0 exp:0
         } //indent:8 exp:8
 
        for ( //indent:7 exp:8 warn
-          int i=0;  //indent:10 exp:>=12 warn
+          int i=0;  //indent:10 exp:>=11 warn
             i<10;  //indent:12 exp:>=12
             i++)  //indent:12 exp:>=12
         { //indent:8 exp:8
@@ -78,7 +78,7 @@ public class InputInvalidForIndent { //indent:0 exp:0
 
         for (int i=0;  //indent:8 exp:8
             i<10; i++ //indent:12 exp:>=12
-            ) { //indent:12 exp:8 warn
+            ) { //indent:12 exp:>=12
             System.getProperty("foo"); //indent:12 exp:12
         } //indent:8 exp:8
     } //indent:4 exp:4

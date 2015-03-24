@@ -135,10 +135,10 @@ public class InputInvalidIfIndent { //indent:0 exp:0
         if (test) { //indent:8 exp:8
 
               System. //indent:14 exp:12 warn
-          getProperty("blah"); //indent:10 exp:12 warn
+          getProperty("blah"); //indent:10 exp:>=18 warn
         } else { //indent:8 exp:8
           System. //indent:10 exp:12 warn
-        getProperty("blah"); //indent:8 exp:12 warn
+        getProperty("blah"); //indent:8 exp:>=14 warn
         } //indent:8 exp:8
 
         // lcurly for if and else on same line //indent:8 exp:8
@@ -213,7 +213,7 @@ System.getProperty("blah"); //indent:0 exp:12 warn
         if (test) //indent:8 exp:8
             System.getProperty("blah");  //indent:12 exp:12
         else if (7 < 8) //indent:8 exp:8
-          System.getProperty("blah");  //indent:10 exp:10
+          System.getProperty("blah");  //indent:10 exp:12 warn
         else if (8 < 9) //indent:8 exp:8
             System.getProperty("blah");  //indent:12 exp:12
 
@@ -237,18 +237,17 @@ System.getProperty("blah"); //indent:0 exp:12 warn
         boolean test = true; //indent:8 exp:8
 
         if (test //indent:8 exp:8
-          ) { //indent:10 exp:8 warn
+          ) { //indent:10 exp:>=12 warn
             System.getProperty("blah");  //indent:12 exp:12
         } //indent:8 exp:8
 
         if (test //indent:8 exp:8
-      )  //indent:6 exp:8 warn
+      )  //indent:6 exp:>=12 warn
         { //indent:8 exp:8
             System.getProperty("blah");  //indent:12 exp:12
         } //indent:8 exp:8
 
-        if  //indent:8 exp:8
-      ( //indent:6 exp:8,12 warn
+        if( //indent:8 exp:8
             test //indent:12 exp:12
       ) { //indent:6 exp:8 warn
             System.getProperty("blah");  //indent:12 exp:12

@@ -18,103 +18,122 @@
 ////////////////////////////////////////////////////////////////////////////////
 package com.puppycrawl.tools.checkstyle.checks.indentation;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.NavigableMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.api.Utils;
 
 /**
- * This class checks line-wrapping into definitions and expressions. The
- * line-wrapping indentation should be not less then value of the
- * lineWrappingIndentation parameter.
+ * This class checks line-wrapping into definitions and expressions. The line-wrapping indentation
+ * should be not less then value of the lineWrappingIndentation parameter.
  *
  * @author maxvetrenko
- *
  */
-public class LineWrappingHandler
+public abstract class LineWrappingHandler
 {
-
     /**
-     * The current instance of <code>IndentationCheck</code> class using this
-     * handler. This field used to get access to private fields of
-     * IndentationCheck instance.
+     * The current instance of <code>IndentationCheck</code> class using this handler. This field
+     * used to get access to private fields of IndentationCheck instance.
      */
     private final IndentationCheck indentCheck;
 
     /**
-     * Root node for current expression.
+     * Base node from which line wrapping starts.
      */
-    private DetailAST firstNode;
-
-    /**
-     * Last node for current expression.
-     */
-    private DetailAST lastNode;
+    private final DetailAST baseNode;
 
     /**
      * User's value of line wrapping indentation.
      */
-    private int indentLevel;
+    private final int lineWrapIndent;
 
     /**
-     * Force strict condition in line wrapping case.
+     * Should Check force strict condition in line wrapping case.
      */
-    private boolean forceStrictCondition;
+    private final boolean forceStrictCondition;
 
     /**
-     * Sets values of class field, finds last node and calculates indentation level.
-     *
+     * Returns base node.
+     * @return base node.
+     */
+    protected final DetailAST getBaseNode()
+    {
+        return baseNode;
+    }
+
+    /**
+     * Returns line wrapping indentation.
+     * @return line wrapping indentation.
+     */
+    protected final int getLineWrappingIndent()
+    {
+        return lineWrapIndent;
+    }
+
+    /**
+     * Returns IndentationCheck instance.
+     * @return IndentationCheck instance.
+     */
+    protected final IndentationCheck getIndentCheck()
+    {
+        return indentCheck;
+    }
+
+    /**
+     * Returns "forceStrictCondition" option value.
+     * @return "forceStrictCondition" option value.
+     */
+    protected final boolean getForceStrictCondition()
+    {
+        return forceStrictCondition;
+    }
+
+    /**
+     * Creates LineWrappingHandler instace.
      * @param instance
-     *            instance of IndentationCheck.
-     * @param firstNode
-     *            root node for current expression.
-     * @param lastNode
-     *            last node for current expression.
+     *        instance of IndentationCheck.
+     * @param baseNode
+     *        base node from which line wrapping starts.
      */
-    public LineWrappingHandler(IndentationCheck instance, DetailAST firstNode, DetailAST lastNode)
+    public LineWrappingHandler(IndentationCheck instance, DetailAST baseNode)
     {
         indentCheck = instance;
-        this.firstNode = firstNode;
-        this.lastNode = lastNode;
-        indentLevel = indentCheck.getLineWrappingIndentation();
+        this.baseNode = baseNode;
+        lineWrapIndent = indentCheck.getLineWrappingIndentation();
         forceStrictCondition = indentCheck.getForceStrictCondition();
     }
 
     /**
+     * Check indentation of subtree nodes.
+     */
+    public abstract void checkIndentation();
+
+    /**
+     * Returns correct indentation.
      * @return correct indentation for current expression.
      */
     protected int getCurrentIndentation()
     {
-        return firstNode.getColumnNo() + indentLevel;
-    }
-
-    // Getters for private fields.
-
-    protected final DetailAST getFirstNode()
-    {
-        return firstNode;
-    }
-
-    protected final DetailAST getLastNode()
-    {
-        return lastNode;
-    }
-
-    protected final int getIndentLevel()
-    {
-        return indentLevel;
+        return getLineStart(baseNode) + lineWrapIndent;
     }
 
     /**
-     * Checks line wrapping into expressions and definitions.
+     * Checks indentation of specified subtrees.
+     * @param subtrees
+     *        list of subtrees to check.
      */
-    public void checkIndentation()
+    protected void checkSubtreesIndentation(List<DetailAST> subtrees)
     {
-        final NavigableMap<Integer, DetailAST> firstNodesOnLines = collectFirstNodes();
-
+        final SortedMap<Integer, DetailAST> firstNodesOnLines = collectFirstNodes(subtrees);
         final DetailAST firstNode = firstNodesOnLines.get(firstNodesOnLines.firstKey());
         if (firstNode.getType() == TokenTypes.AT) {
             checkAnnotationIndentation(firstNode, firstNodesOnLines);
@@ -122,125 +141,167 @@ public class LineWrappingHandler
 
         // First node should be removed because it was already checked before.
         firstNodesOnLines.remove(firstNodesOnLines.firstKey());
-        final int firstNodeIndent = getFirstNodeIndent(firstNode);
-        final int currentIndent = firstNodeIndent + indentLevel;
+        final int currentIndent = getCurrentIndentation();
 
         for (DetailAST node : firstNodesOnLines.values()) {
-            final int currentType = node.getType();
-
-            if (currentType == TokenTypes.RCURLY
-                    || currentType == TokenTypes.RPAREN
-                    || currentType == TokenTypes.ARRAY_INIT)
-            {
-                logWarningMessage(node, firstNodeIndent);
-            }
-            else if (currentType == TokenTypes.LITERAL_IF) {
-                final DetailAST parent = node.getParent();
-
-                if (parent.getType() == TokenTypes.LITERAL_ELSE) {
-                    logWarningMessage(parent, currentIndent);
-                }
+            if (isIfInsideElse(node)) {
+                checkAndLog(node.getParent(), currentIndent);
             }
             else {
-                logWarningMessage(node, currentIndent);
+                if (isMethodCall(node)) {
+                    node = getMethodCallStartNode(node);
+                }
+                checkAndLog(node, currentIndent);
             }
         }
     }
 
     /**
-     * Calculates indentation of first node.
-     *
+     * Checks whether node is "if" inside "else"
+     * @param node to check.
+     * @return true, if given node is "if" inside "else".
+     */
+    protected static boolean isIfInsideElse(final DetailAST node)
+    {
+        return node.getType() == TokenTypes.LITERAL_IF
+            && node.getParent().getType() == TokenTypes.LITERAL_ELSE;
+    }
+
+    /**
+     * Traverses subtrees and builds map lineNo-to-firstNodeOnLine.
+     * @param subtrees
+     *        list of subtrees to traverse.
+     * @return lineNumber-to-firstNodeOnLine map.
+     */
+    private SortedMap<Integer, DetailAST> collectFirstNodes(
+        List<DetailAST> subtrees)
+    {
+        final SortedMap<Integer, DetailAST> lineToNodeMap = new TreeMap<>();
+        final Queue<DetailAST> nodesQueue = new LinkedList<>();
+
+        lineToNodeMap.put(baseNode.getLineNo(), baseNode);
+        nodesQueue.addAll(subtrees);
+        while (!nodesQueue.isEmpty()) {
+            final DetailAST currentNode = nodesQueue.remove();
+
+            if (isMethodCall(currentNode)) {
+                final DetailAST methodCallStartNode =
+                    getMethodCallStartNode(currentNode);
+
+                addNodeIfCloserToLineStart(lineToNodeMap, methodCallStartNode);
+            }
+            else if (!isExceptionalTokenType(currentNode)) {
+                addNodeIfCloserToLineStart(lineToNodeMap, currentNode);
+            }
+
+            if (shouldProcessNodeSubtree(currentNode)) {
+                nodesQueue.addAll(getNodeChildren(currentNode));
+            }
+        }
+        return lineToNodeMap;
+    }
+
+    /**
+     * Checks whether node is of exceptional type, so that is must not be considered when building
+     * lineNo-to-firstNodeOnLine map.
      * @param node
-     *            first node.
-     * @return indentation of first node.
+     *        node to check.
+     * @return true, if node of type TokenTypes.ARRAY_INIT.
      */
-    private int getFirstNodeIndent(DetailAST node)
+    private static boolean isExceptionalTokenType(DetailAST node)
     {
-        int indentLevel = node.getColumnNo();
+        final int type = node.getType();
+        return type == TokenTypes.ARRAY_INIT;
+    }
 
-        if (node.getType() == TokenTypes.LITERAL_IF
-                && node.getParent().getType() == TokenTypes.LITERAL_ELSE)
+    /**
+     * Checks whether node subtree must be traversed.
+     * @param node
+     *        node to check.
+     * @return true, if line wrapping check was called for this node of if node`s type is not
+     *         specially handled.
+     */
+    protected final boolean shouldProcessNodeSubtree(DetailAST node)
+    {
+        return node == baseNode || !isSpeciallyHandledType(node.getType());
+    }
+
+    /**
+     * Checks whether node type is specially handled by some special handler.
+     * @param type to check.
+     * @return true, if given token type is handled specially.
+     */
+    protected final boolean isSpeciallyHandledType(final int type)
+    {
+        return indentCheck.getHandlerFactory().isHandledType(type);
+    }
+
+    /**
+     * Get all node children.
+     * @param node
+     *        node to collect children for.
+     * @return list of node children.
+     */
+    protected static List<DetailAST> getNodeChildren(DetailAST node)
+    {
+        if (node.getChildCount() == 0) {
+            return Collections.emptyList();
+        }
+        else {
+            final List<DetailAST> children = new ArrayList<>(node.getChildCount());
+
+            DetailAST child = node.getFirstChild();
+            while (child != null) {
+                children.add(child);
+                child = child.getNextSibling();
+            }
+
+            if (isMethodCall(node)) {
+                children.remove(0); //remove pre-ELIST element
+            }
+            return children;
+        }
+    }
+
+    /**
+     * Checks whether node is of type TokenTypes.METHOD_CALL.
+     * @param node
+     *        node to check.
+     * @return true, if node`s type is TokenTypes.METHOD_CALL.
+     */
+    private static boolean isMethodCall(DetailAST node)
+    {
+        return node.getType() == TokenTypes.METHOD_CALL;
+    }
+
+    /**
+     * Adds node to map if it closer to line start than node already present in map.
+     * @param linesToNodesMap map to add node to.
+     * @param offeredNode node to add.
+     */
+    private static void addNodeIfCloserToLineStart(
+        SortedMap<Integer, DetailAST> linesToNodesMap, DetailAST offeredNode)
+    {
+        final int line = offeredNode.getLineNo();
+        final DetailAST firstNodeOnLine = linesToNodesMap.get(line);
+        if (firstNodeOnLine == null
+            || offeredNode.getColumnNo() <= firstNodeOnLine.getColumnNo())
         {
-            final DetailAST lcurly = node.getParent().getPreviousSibling();
-            final DetailAST rcurly = lcurly.getLastChild();
-
-            if (lcurly.getType() == TokenTypes.SLIST
-                    && rcurly.getLineNo() == node.getLineNo())
-            {
-                indentLevel = rcurly.getColumnNo();
-            }
-            else {
-                indentLevel = node.getParent().getColumnNo();
-            }
+            linesToNodesMap.put(line, offeredNode);
         }
-        return indentLevel;
-    }
-
-    /**
-     * Finds first nodes on line and puts them into Map.
-     *
-     * @return NavigableMap which contains lines numbers as a key and first
-     *         nodes on lines as a values.
-     */
-    private NavigableMap<Integer, DetailAST> collectFirstNodes()
-    {
-        final NavigableMap<Integer, DetailAST> result = new TreeMap<>();
-
-        result.put(firstNode.getLineNo(), firstNode);
-        DetailAST curNode = firstNode.getFirstChild();
-
-        while (curNode != null && curNode != lastNode) {
-
-            if (curNode.getType() == TokenTypes.OBJBLOCK) {
-                curNode = curNode.getNextSibling();
-            }
-
-            if (curNode != null) {
-                final DetailAST firstTokenOnLine = result.get(curNode.getLineNo());
-
-                if (firstTokenOnLine == null
-                        || firstTokenOnLine != null
-                        && firstTokenOnLine.getColumnNo() >= curNode.getColumnNo())
-                {
-                    result.put(curNode.getLineNo(), curNode);
-                }
-                curNode = getNextCurNode(curNode);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Returns next curNode node.
-     *
-     * @param curNode current node.
-     * @return next curNode node.
-     */
-    private DetailAST getNextCurNode(DetailAST curNode)
-    {
-        DetailAST nodeToVisit = curNode.getFirstChild();
-        DetailAST currentNode = curNode;
-
-        while (currentNode != null && nodeToVisit == null) {
-            nodeToVisit = currentNode.getNextSibling();
-            if (nodeToVisit == null) {
-                currentNode = currentNode.getParent();
-            }
-        }
-        return nodeToVisit;
     }
 
     /**
      * Checks line wrapping into annotations.
-     *
-     * @param atNode at-clause node.
-     * @param firstNodesOnLines map which contains
-     *     first nodes as values and line numbers as keys.
+     * @param atNode
+     *        at-clause node.
+     * @param firstNodesOnLines
+     *        map which contains first nodes as values and line numbers as keys.
      */
     private void checkAnnotationIndentation(DetailAST atNode,
-            NavigableMap<Integer, DetailAST> firstNodesOnLines)
+        SortedMap<Integer, DetailAST> firstNodesOnLines)
     {
-        final int currentIndent = atNode.getColumnNo() + indentLevel;
+        final int currentIndent = atNode.getColumnNo() + lineWrapIndent;
         final int firstNodeIndent = atNode.getColumnNo();
         final Collection<DetailAST> values = firstNodesOnLines.values();
         final DetailAST lastAnnotationNode = getLastAnnotationNode(atNode);
@@ -252,17 +313,17 @@ public class LineWrappingHandler
             final DetailAST node = itr.next();
 
             if (node.getLineNo() < lastAnnotationLine
-                    || node.getLineNo() == lastAnnotationLine
-                    && node.getColumnNo() <= lastAnnotattionColumn)
+                || node.getLineNo() == lastAnnotationLine
+                && node.getColumnNo() <= lastAnnotattionColumn)
             {
                 final DetailAST parentNode = node.getParent();
                 if (node.getType() == TokenTypes.AT
-                        && parentNode.getParent().getType() == TokenTypes.MODIFIERS)
+                    && parentNode.getParent().getType() == TokenTypes.MODIFIERS)
                 {
-                    logWarningMessage(node, firstNodeIndent);
+                    checkAndLog(node, firstNodeIndent);
                 }
                 else {
-                    logWarningMessage(node, currentIndent);
+                    checkAndLog(node, currentIndent);
                 }
                 itr.remove();
             }
@@ -274,14 +335,15 @@ public class LineWrappingHandler
 
     /**
      * Finds and returns last annotation node.
-     * @param atNode first at-clause node.
+     * @param atNode
+     *        first at-clause node.
      * @return last annotation node.
      */
     private DetailAST getLastAnnotationNode(DetailAST atNode)
     {
         DetailAST lastAnnotation = atNode.getParent();
         while (lastAnnotation.getNextSibling() != null
-                && lastAnnotation.getNextSibling().getType() == TokenTypes.ANNOTATION)
+            && lastAnnotation.getNextSibling().getType() == TokenTypes.ANNOTATION)
         {
             lastAnnotation = lastAnnotation.getNextSibling();
         }
@@ -290,27 +352,108 @@ public class LineWrappingHandler
 
     /**
      * Logs warning message if indentation is incorrect.
-     *
      * @param currentNode
-     *            current node which probably invoked an error.
-     * @param currentIndent
-     *            correct indentation.
+     *        current node which probably invoked an error.
+     * @param correctIndent
+     *        correct indentation.
      */
-    private void logWarningMessage(DetailAST currentNode, int currentIndent)
+    protected void checkAndLog(DetailAST currentNode, int correctIndent)
     {
-        if (forceStrictCondition) {
-            if (currentNode.getColumnNo() != currentIndent) {
-                indentCheck.indentationLog(currentNode.getLineNo(),
-                        "indentation.error", currentNode.getText(),
-                        currentNode.getColumnNo(), currentIndent);
+        if (startsLine(currentNode) && currentNode.getLineNo() != baseNode.getLineNo())
+        {
+            final int currenNodeIndent = getLineStart(currentNode);
+            if (forceStrictCondition && currenNodeIndent != correctIndent
+                || currenNodeIndent < correctIndent)
+            {
+                logWarningMessage(currentNode, correctIndent);
             }
         }
-        else {
-            if (currentNode.getColumnNo() < currentIndent) {
-                indentCheck.indentationLog(currentNode.getLineNo(),
-                        "indentation.error", currentNode.getText(),
-                        currentNode.getColumnNo(), currentIndent);
+    }
+
+    /**
+     * Returns method call start node.
+     * @param methCall
+     *        method call node.
+     * @return method call start node.
+     */
+    protected static DetailAST getMethodCallStartNode(DetailAST methCall)
+    {
+        DetailAST methCallFirstChild = methCall.getFirstChild();
+        while (methCallFirstChild.getFirstChild() != null) {
+            methCallFirstChild = methCallFirstChild.getFirstChild();
+        }
+        return methCallFirstChild;
+    }
+
+    /**
+     * Logs warning message for given node.
+     * @param currentNode
+     *        node which violates indentation rules.
+     * @param correctIndent
+     *        correct indent for node.
+     */
+    protected final void logWarningMessage(DetailAST currentNode, int correctIndent)
+    {
+        indentCheck.indentationLog(currentNode.getLineNo(),
+            "indentation.error", currentNode.getText(),
+            currentNode.getColumnNo(), correctIndent);
+    }
+
+    /**
+     * Determines if the given expression is at the start of a line.
+     * @param ast
+     *        the expression to check
+     * @return true if it is, false otherwise
+     */
+    protected final boolean startsLine(DetailAST ast)
+    {
+        return getLineStart(ast) == expandedTabsColumnNo(ast);
+    }
+
+    /**
+     * Get the start of the line for the given expression.
+     * @param ast
+     *        the expression to find the start of the line for
+     * @return the start of the line for the given expression
+     */
+    protected final int getLineStart(DetailAST ast)
+    {
+        final String line = indentCheck.getLine(ast.getLineNo() - 1);
+        return getLineStart(line);
+    }
+
+    /**
+     * Get the start of the specified line.
+     * @param line
+     *        the specified line number
+     * @return the start of the specified line
+     */
+    protected final int getLineStart(String line)
+    {
+        for (int start = 0; start < line.length(); start++) {
+            final char c = line.charAt(start);
+
+            if (!Character.isWhitespace(c)) {
+                return Utils.lengthExpandedTabs(
+                    line, start, indentCheck.getIndentationTabWidth());
             }
         }
+        return 0;
+    }
+
+    /**
+     * Get the column number for the start of a given expression, expanding tabs out into spaces in
+     * the process.
+     * @param ast
+     *        the expression to find the start of
+     * @return the column number for the start of the expression
+     */
+    protected final int expandedTabsColumnNo(DetailAST ast)
+    {
+        final String line =
+            indentCheck.getLine(ast.getLineNo() - 1);
+
+        return Utils.lengthExpandedTabs(line, ast.getColumnNo(),
+            indentCheck.getIndentationTabWidth());
     }
 }

@@ -51,6 +51,9 @@ public class WhileHandler extends BlockParentHandler
         final IndentLevel expected =
             new IndentLevel(getLevel(), getBasicOffset());
         checkExpressionSubtree(condAst, expected, false, false);
+        final LineWrappingHandler lineWrap =
+            new ParenthesisLineWrappingHandler(getIndentCheck(), getMainAst());
+        lineWrap.checkIndentation();
     }
 
     @Override

@@ -102,19 +102,7 @@ public class IfHandler extends BlockParentHandler
         super.checkIndentation();
         checkCondExpr();
         final LineWrappingHandler lineWrap =
-            new LineWrappingHandler(getIndentCheck(), getMainAst(),
-                    getIfStatementRightParen(getMainAst()));
+            new ParenthesisLineWrappingHandler(getIndentCheck(), getMainAst());
         lineWrap.checkIndentation();
-    }
-
-    /**
-     * Returns right parenthesis of if statement.
-     * @param literalIfAst
-     *          literal-if ast node(TokenTypes.LITERAL_IF)
-     * @return right parenthesis of if statement.
-     */
-    private static DetailAST getIfStatementRightParen(DetailAST literalIfAst)
-    {
-        return literalIfAst.findFirstToken(TokenTypes.RPAREN);
     }
 }

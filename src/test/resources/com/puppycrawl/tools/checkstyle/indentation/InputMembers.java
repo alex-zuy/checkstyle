@@ -19,9 +19,9 @@ import java.util.Map; //indent:0 exp:0
 class FooFieldClass { //indent:0 exp:0
 
   boolean flag //indent:2 exp:2
-     = conditionFirst("Loooooooooooooooooong", new  //indent:5 exp:6 warn
-      SecondFieldClassWithVeryVeryVeryLongName("Loooooooooooooooooog"). //indent:6 exp:6
-      getInteger(new FooFieldClass(), "Loooooooooooooooooog"), new InnerClassFoo()); //indent:6 exp:6
+      = conditionFirst("Loooooooooooooooooong", new  //indent:6 exp:6
+          SecondFieldClassWithVeryVeryVeryLongName("Loooooooooooooooooog"). //indent:10 exp:10
+              getInteger(new FooFieldClass(), "Loooooooooooooooooog"), new InnerClassFoo()); //indent:14 exp:14
 
 
   String getString(int someInt, String someString) { //indent:2 exp:2
@@ -42,19 +42,19 @@ class FooFieldClass { //indent:0 exp:0
 
     boolean flag //indent:4 exp:4
         = conditionFirst("Loooooooooooooooooong", new //indent:8 exp:8
-        SecondFieldClassWithVeryVeryVeryLongName("Loooooooooooooooooog"). //indent:8 exp:8
-            getInteger(new FooFieldClass(), "Loooooooooooooooooog"), //indent:12 exp:>=8
-             new InnerClassFoo()); //indent:13 exp:>=8
+            SecondFieldClassWithVeryVeryVeryLongName("Loooooooooooooooooog"). //indent:12 exp:12
+                getInteger(new FooFieldClass(), "Loooooooooooooooooog"), //indent:16 exp:16
+            new InnerClassFoo()); //indent:12 exp:12
 
     FooFieldClass anonymousClass = //indent:4 exp:4
         new FooFieldClass() { //indent:8 exp:8
           boolean secondFlag = conditionSecond(10000000000.0, new //indent:10 exp:10
               SecondFieldClassWithVeryVeryVeryLongName("Looooooooooooo" //indent:14 exp:14
-                + "oooooooooooong").getString(new FooFieldClass(), //indent:16 exp:>=14
-                   new SecondFieldClassWithVeryVeryVeryLongName("loooooooooong"). //indent:19 exp:>=14
-                 getInteger(new FooFieldClass(), "loooooooooooooong")), "loooooooooooong"); //indent:17 exp:>=14
+                  + "oooooooooooong").getString(new FooFieldClass(), //indent:18 exp:18
+                      new SecondFieldClassWithVeryVeryVeryLongName("loooooooooong"). //indent:22 exp:22
+                          getInteger(new FooFieldClass(), "loooooooooooooong")), "loooooooooooong"); //indent:26 exp:26
         }; //indent:8 exp:8
-   } //indent:3 exp:2 warn
+  } //indent:2 exp:2
 } //indent:0 exp:0
 
 class SecondFieldClassWithVeryVeryVeryLongName { //indent:0 exp:0
@@ -83,7 +83,7 @@ class SecondFieldClassWithVeryVeryVeryLongName { //indent:0 exp:0
 
 abstract class WithAnnotations { //indent:0 exp:0
   @GwtIncompatible("Non-UTF-8" //indent:2 exp:2
-       + "Charset") //indent:7 exp:7
+      + "Charset") //indent:6 exp:6
   public static final int FOO_CONSTANT = 111; //indent:2 exp:2
 
   private void foo34() {} //indent:2 exp:2

@@ -46,7 +46,10 @@ public class IndexHandler extends ExpressionHandler
     @Override
     public void checkIndentation()
     {
-        // do nothing. Used to provide a correct suggested child level for now.
+        final LineWrappingHandler lineWrap =
+            new SubrangeLineWrappingHandler(getIndentCheck(), getMainAst(),
+                getMainAst().getLastChild());
+        lineWrap.checkIndentation();
     }
 
     @Override
