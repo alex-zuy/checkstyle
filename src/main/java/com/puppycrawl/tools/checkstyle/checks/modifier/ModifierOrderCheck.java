@@ -118,7 +118,7 @@ public class ModifierOrderCheck
                             MSG_ANNOTATION_ORDER,
                              error.getFirstChild().getText()
                              + error.getFirstChild().getNextSibling()
-                                .getText());
+                                 .getText());
                 }
                 else {
                     log(error.getLineNo(), error.getColumnNo(),

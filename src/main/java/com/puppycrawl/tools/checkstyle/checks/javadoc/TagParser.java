@@ -119,7 +119,7 @@ class TagParser
                 final boolean closedTag =
                         endTag.getLineNo() < nLines && endTag.getColumnNo() > 0
                          && text[endTag.getLineNo()]
-                         .charAt(endTag.getColumnNo() - 1) == '/';
+                             .charAt(endTag.getColumnNo() - 1) == '/';
                 // add new tag
                 add(new HtmlTag(tagId,
                                 position.getLineNo() + lineNo,
@@ -210,7 +210,7 @@ class TagParser
         to = findChar(text, '>', to);
         while (to.getLineNo() < text.length
                && !text[to.getLineNo()]
-               .substring(0, to.getColumnNo() + 1).endsWith("-->"))
+                   .substring(0, to.getColumnNo() + 1).endsWith("-->"))
         {
             to = findChar(text, '>', getNextCharPos(text, to));
         }

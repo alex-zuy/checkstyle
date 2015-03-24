@@ -333,7 +333,7 @@ public enum JavadocTagInfo
                     || "readExternal".equals(methodName)
                     || "writeReplace".equals(methodName)
                     || "readResolve"
-                    .equals(methodName));
+                        .equals(methodName));
         }
     },
 

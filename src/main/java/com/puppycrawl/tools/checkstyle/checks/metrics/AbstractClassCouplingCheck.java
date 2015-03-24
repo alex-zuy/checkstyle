@@ -40,26 +40,26 @@ public abstract class AbstractClassCouplingCheck extends Check
     /** Class names to ignore. */
     private static final Set<String> DEFAULT_EXCLUDED_CLASSES =
                 ImmutableSet.<String>builder()
-                // primitives
-                .add("boolean", "byte", "char", "double", "float", "int")
-                .add("long", "short", "void")
-                // wrappers
-                .add("Boolean", "Byte", "Character", "Double", "Float")
-                .add("Integer", "Long", "Short", "Void")
-                // java.lang.*
-                .add("Object", "Class")
-                .add("String", "StringBuffer", "StringBuilder")
-                // Exceptions
-                .add("ArrayIndexOutOfBoundsException", "Exception")
-                .add("RuntimeException", "IllegalArgumentException")
-                .add("IllegalStateException", "IndexOutOfBoundsException")
-                .add("NullPointerException", "Throwable", "SecurityException")
-                .add("UnsupportedOperationException")
-                // java.util.*
-                .add("List", "ArrayList", "Deque", "Queue", "LinkedList")
-                .add("Set", "HashSet", "SortedSet", "TreeSet")
-                .add("Map", "HashMap", "SortedMap", "TreeMap")
-                .build();
+                    // primitives
+                    .add("boolean", "byte", "char", "double", "float", "int")
+                    .add("long", "short", "void")
+                    // wrappers
+                    .add("Boolean", "Byte", "Character", "Double", "Float")
+                    .add("Integer", "Long", "Short", "Void")
+                    // java.lang.*
+                    .add("Object", "Class")
+                    .add("String", "StringBuffer", "StringBuilder")
+                    // Exceptions
+                    .add("ArrayIndexOutOfBoundsException", "Exception")
+                    .add("RuntimeException", "IllegalArgumentException")
+                    .add("IllegalStateException", "IndexOutOfBoundsException")
+                    .add("NullPointerException", "Throwable", "SecurityException")
+                    .add("UnsupportedOperationException")
+                    // java.util.*
+                    .add("List", "ArrayList", "Deque", "Queue", "LinkedList")
+                    .add("Set", "HashSet", "SortedSet", "TreeSet")
+                    .add("Map", "HashMap", "SortedMap", "TreeMap")
+                    .build();
     /** User-configured class names to ignore. */
     private Set<String> excludedClasses = DEFAULT_EXCLUDED_CLASSES;
     /** Allowed complexity. */

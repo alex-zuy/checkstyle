@@ -297,13 +297,13 @@ public class VisibilityModifierCheck
         "java.net.Inet4Address",
         "java.net.Inet6Address",
         "java.net.InetSocketAddress"
-    );
+        );
 
     /** Default ignore annotations canonical names. */
     private static final List<String> DEFAULT_IGNORE_ANNOTATIONS = ImmutableList.of(
         "org.junit.Rule",
         "com.google.common.annotations.VisibleForTesting"
-    );
+        );
 
     /** contains explicit access modifiers. */
     private static final String[] EXPLICIT_MODS = {"public", "private", "protected"};
@@ -745,7 +745,7 @@ public class VisibilityModifierCheck
         for (String canonicalClassName : canonicalClassNames) {
             final String shortClassName = canonicalClassName
                     .substring(canonicalClassName.lastIndexOf(".") + 1,
-                    canonicalClassName.length());
+                        canonicalClassName.length());
             shortNames.add(shortClassName);
         }
         return shortNames;
@@ -760,7 +760,7 @@ public class VisibilityModifierCheck
     {
         final String shortClassName = canonicalClassName
                 .substring(canonicalClassName.lastIndexOf(".") + 1,
-                canonicalClassName.length());
+                    canonicalClassName.length());
         return shortClassName;
     }
 

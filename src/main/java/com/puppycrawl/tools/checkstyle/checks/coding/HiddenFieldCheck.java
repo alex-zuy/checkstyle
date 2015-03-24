@@ -238,7 +238,7 @@ public class HiddenFieldCheck
                 type == TokenTypes.CLASS_DEF || type == TokenTypes.ENUM_DEF
                     ? ast.findFirstToken(TokenTypes.IDENT).getText()
                     : null
-            );
+                );
 
         //add fields to container
         final DetailAST objBlock = ast.findFirstToken(TokenTypes.OBJBLOCK);

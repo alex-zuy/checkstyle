@@ -204,7 +204,7 @@ public final class MissingDeprecatedCheck extends Check
                 {
                     final Matcher multilineCont =
                         MissingDeprecatedCheck.MATCH_DEPRECATED_MULTILINE_CONT
-                        .matcher(lines[reindex]);
+                            .matcher(lines[reindex]);
 
                     if (multilineCont.find()) {
                         reindex = lines.length;

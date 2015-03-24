@@ -91,7 +91,7 @@ public class AtclauseOrderCheck extends AbstractJavadocCheck
         TokenTypes.METHOD_DEF,
         TokenTypes.CTOR_DEF,
         TokenTypes.VARIABLE_DEF
-    );
+        );
 
     /**
      * Order of atclauses.

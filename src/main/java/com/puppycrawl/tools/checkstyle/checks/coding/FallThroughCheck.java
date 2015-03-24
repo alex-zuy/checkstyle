@@ -391,7 +391,7 @@ public class FallThroughCheck extends Check
      * @return True if a match was found inside a comment.
      */
     private boolean commentMatch(Pattern pattern, String line, int lineNo
-    )
+        )
     {
         final Matcher matcher = pattern.matcher(line);
 

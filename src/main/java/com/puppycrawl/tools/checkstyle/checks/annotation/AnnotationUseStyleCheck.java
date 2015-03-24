@@ -355,7 +355,7 @@ public final class AnnotationUseStyleCheck extends Check
             if (nestedArrayInit != null
                 && AnnotationUseStyleCheck.
                     ANNOTATION_ELEMENT_SINGLE_NAME.equals(
-                    valuePair.getFirstChild().getText())
+                        valuePair.getFirstChild().getText())
                     && nestedArrayInit.getChildCount(TokenTypes.EXPR) == 1)
             {
                 this.log(annotation.getLineNo(), "annotation.incorrect.style",
