@@ -154,7 +154,9 @@ public class MethodCallHandler extends ExpressionHandler
         checkExpressionSubtree(methodName, getLevel(), false, false);
 
         final DetailAST lparen = getMainAst();
+        final DetailAST rparen = getMainAst().findFirstToken(TokenTypes.RPAREN);
         checkLParen(lparen);
+        checkRParen(lparen, rparen);
 
         checkExpressionSubtree(
             getMainAst().findFirstToken(TokenTypes.ELIST),

@@ -49,7 +49,9 @@ public class MethodCallLineWrappingHandler extends LineWrappingHandler
     public void checkIndentation()
     {
         checkMethodCallTargetChainWrapping();
-        checkSubtreesIndentation(getNodeChildren(getBaseNode()));
+        final List<DetailAST> nodes = getNodeChildren(getBaseNode());
+        nodes.remove(nodes.size() - 1);
+        checkSubtreesIndentation(nodes);
     }
 
     /**

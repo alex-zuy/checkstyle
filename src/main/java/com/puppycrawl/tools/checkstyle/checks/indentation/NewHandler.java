@@ -61,20 +61,7 @@ public class NewHandler extends ExpressionHandler
             return;
         }
 
-//        final DetailAST leftParen = getLParen();
-//        final DetailAST rightParen = getRParen();
-//        final LineWrappingHandler parameterListWrap =
-//            new RangedLineWrapHandler(getIndentCheck(), getMainAst(),
-//                leftParen, rightParen)
-//        {
-//            @Override
-//            protected int getCurrentIndentation()
-//            {
-//                return getLineStart(getBaseNode().getFirstChild())
-//                    + getLineWrappingIndent();
-//            }
-//        };
-//        parameterListWrap.checkIndentation();
+        checkRParen(lparen, rparen);
         final LineWrappingHandler lineWrap =
             new ParenthesisLineWrappingHandler(getIndentCheck(), getMainAst());
         lineWrap.checkIndentation();

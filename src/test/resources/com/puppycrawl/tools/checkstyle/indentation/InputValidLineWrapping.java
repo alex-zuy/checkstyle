@@ -77,26 +77,26 @@ public class InputValidLineWrapping { //indent:0 exp:0
 
   public String field7 = String.valueOf(Integer //indent:2 exp:2
       .valueOf("12") //indent:6 exp:6
-      ); //indent:6 exp:6
+  ); //indent:2 exp:2
 
   public String field8 = String.valueOf(Integer //indent:2 exp:2
       .valueOf( //indent:6 exp:6
           "12") //indent:10 exp:10
-      ); //indent:6 exp:6
+  ); //indent:2 exp:2
 
   public String field9 = String.valueOf(Integer //indent:2 exp:2
       .valueOf( //indent:6 exp:6
           "12" //indent:10 exp:10
-          ) //indent:10 exp:10
-      ); //indent:6 exp:6
+      ) //indent:6 exp:6
+  ); //indent:2 exp:2
 
   public String field10 = String.valueOf(Integer //indent:2 exp:2
       .valueOf( //indent:6 exp:6
           "1" //indent:10 exp:10
           + //indent:10 exp:10
           "2" //indent:10 exp:10
-          ) //indent:10 exp:10
-      ); //indent:6 exp:6
+      ) //indent:6 exp:6
+  ); //indent:2 exp:2
 
   public void m() //indent:2 exp:2
   { //indent:2 exp:2
@@ -106,8 +106,8 @@ public class InputValidLineWrapping { //indent:0 exp:0
                 "12"), //indent:16 exp:16
             Integer.valueOf( //indent:12 exp:12
                 "14") //indent:16 exp:16
-            ) //indent:12 exp:12
-        ); //indent:8 exp:8
+        ) //indent:8 exp:8
+    ); //indent:4 exp:4
 
     String var1; //indent:4 exp:4
 
@@ -157,7 +157,7 @@ public class InputValidLineWrapping { //indent:0 exp:0
         .substring(1, 2); //indent:8 exp:8
 
     for(int i = 0; i < 4; ++i //indent:4 exp:4
-        ) { //indent:8 exp:8
+    ) { //indent:4 exp:4
 
     } //indent:4 exp:4
 
@@ -213,7 +213,7 @@ public class InputValidLineWrapping { //indent:0 exp:0
 
     if( //indent:4 exp:4
         cond //indent:8 exp:8
-        ) { //indent:8 exp:8
+    ) { //indent:4 exp:4
 
     } //indent:4 exp:4
 
