@@ -218,6 +218,24 @@ public class AnnotationLocationCheck extends AbstractCheck {
     /**
      * Some javadoc.
      * @param modifierNode Some javadoc.
+     * @return Some javadoc.
+     */
+    private static int getAnnotationLevel(DetailAST modifierNode) {
+        return modifierNode.getParent().getColumnNo();
+    }
+
+    /**
+     * Some javadoc.
+     * @param modifierNode Some javadoc.
+     * @return Some javadoc.
+     */
+    private static boolean hasAnnotations(DetailAST modifierNode) {
+        return modifierNode.findFirstToken(TokenTypes.ANNOTATION) != null;
+    }
+
+    /**
+     * Some javadoc.
+     * @param modifierNode Some javadoc.
      * @param correctLevel Some javadoc.
      */
     private void checkAnnotations(DetailAST modifierNode, int correctLevel) {
@@ -232,30 +250,10 @@ public class AnnotationLocationCheck extends AbstractCheck {
             }
             else if (annotation.getColumnNo() != correctLevel && !hasNodeBefore(annotation)) {
                 log(annotation.getLineNo(), MSG_KEY_ANNOTATION_LOCATION,
-                    getAnnotationName(annotation), annotation.getColumnNo(), correctLevel);
+                        getAnnotationName(annotation), annotation.getColumnNo(), correctLevel);
             }
             annotation = annotation.getNextSibling();
         }
-    }
-
-    /**
-     * Some javadoc.
-     * @param annotation Some javadoc.
-     * @param hasParams Some javadoc.
-     * @return Some javadoc.
-     */
-    private boolean isCorrectLocation(DetailAST annotation, boolean hasParams) {
-        final boolean allowingCondition;
-
-        if (hasParams) {
-            allowingCondition = allowSamelineParameterizedAnnotation;
-        }
-        else {
-            allowingCondition = allowSamelineSingleParameterlessAnnotation;
-        }
-        return allowSamelineMultipleAnnotations
-            || allowingCondition && !hasNodeBefore(annotation)
-            || !allowingCondition && !hasNodeBeside(annotation);
     }
 
     /**
@@ -276,15 +274,37 @@ public class AnnotationLocationCheck extends AbstractCheck {
      * @param annotation Some javadoc.
      * @return Some javadoc.
      */
-    private static boolean hasNodeAfter(DetailAST annotation) {
-        final int annotationLineNo = annotation.getLineNo();
-        DetailAST nextNode = annotation.getNextSibling();
+    private static boolean isParameterized(DetailAST annotation) {
+        return annotation.findFirstToken(TokenTypes.EXPR) != null;
+    }
 
-        if (nextNode == null) {
-            nextNode = annotation.getParent().getNextSibling();
+    /**
+     * Some javadoc.
+     * @param annotation Some javadoc.
+     * @param hasParams Some javadoc.
+     * @return Some javadoc.
+     */
+    private boolean isCorrectLocation(DetailAST annotation, boolean hasParams) {
+        final boolean allowingCondition;
+
+        if (hasParams) {
+            allowingCondition = allowSamelineParameterizedAnnotation;
         }
+        else {
+            allowingCondition = allowSamelineSingleParameterlessAnnotation;
+        }
+        return allowSamelineMultipleAnnotations
+                || allowingCondition && !hasNodeBefore(annotation)
+                || !allowingCondition && !hasNodeBeside(annotation);
+    }
 
-        return annotationLineNo == nextNode.getLineNo();
+    /**
+     * Some javadoc.
+     * @param annotation Some javadoc.
+     * @return Some javadoc.
+     */
+    private static boolean hasNodeBeside(DetailAST annotation) {
+        return hasNodeBefore(annotation) || hasNodeAfter(annotation);
     }
 
     /**
@@ -304,34 +324,14 @@ public class AnnotationLocationCheck extends AbstractCheck {
      * @param annotation Some javadoc.
      * @return Some javadoc.
      */
-    private static boolean hasNodeBeside(DetailAST annotation) {
-        return hasNodeBefore(annotation) || hasNodeAfter(annotation);
-    }
+    private static boolean hasNodeAfter(DetailAST annotation) {
+        final int annotationLineNo = annotation.getLineNo();
+        DetailAST nextNode = annotation.getNextSibling();
 
-    /**
-     * Some javadoc.
-     * @param modifierNode Some javadoc.
-     * @return Some javadoc.
-     */
-    private static int getAnnotationLevel(DetailAST modifierNode) {
-        return modifierNode.getParent().getColumnNo();
-    }
+        if (nextNode == null) {
+            nextNode = annotation.getParent().getNextSibling();
+        }
 
-    /**
-     * Some javadoc.
-     * @param annotation Some javadoc.
-     * @return Some javadoc.
-     */
-    private static boolean isParameterized(DetailAST annotation) {
-        return annotation.findFirstToken(TokenTypes.EXPR) != null;
-    }
-
-    /**
-     * Some javadoc.
-     * @param modifierNode Some javadoc.
-     * @return Some javadoc.
-     */
-    private static boolean hasAnnotations(DetailAST modifierNode) {
-        return modifierNode.findFirstToken(TokenTypes.ANNOTATION) != null;
+        return annotationLineNo == nextNode.getLineNo();
     }
 }
