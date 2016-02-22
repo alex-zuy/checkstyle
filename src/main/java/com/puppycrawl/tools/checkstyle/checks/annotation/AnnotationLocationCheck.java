@@ -220,8 +220,8 @@ public class AnnotationLocationCheck extends AbstractCheck {
      * @param modifierNode Some javadoc.
      * @return Some javadoc.
      */
-    private static int getAnnotationLevel(DetailAST modifierNode) {
-        return modifierNode.getParent().getColumnNo();
+    private static boolean hasAnnotations(DetailAST modifierNode) {
+        return modifierNode.findFirstToken(TokenTypes.ANNOTATION) != null;
     }
 
     /**
@@ -229,8 +229,8 @@ public class AnnotationLocationCheck extends AbstractCheck {
      * @param modifierNode Some javadoc.
      * @return Some javadoc.
      */
-    private static boolean hasAnnotations(DetailAST modifierNode) {
-        return modifierNode.findFirstToken(TokenTypes.ANNOTATION) != null;
+    private static int getAnnotationLevel(DetailAST modifierNode) {
+        return modifierNode.getParent().getColumnNo();
     }
 
     /**
@@ -261,12 +261,8 @@ public class AnnotationLocationCheck extends AbstractCheck {
      * @param annotation Some javadoc.
      * @return Some javadoc.
      */
-    private static String getAnnotationName(DetailAST annotation) {
-        DetailAST identNode = annotation.findFirstToken(TokenTypes.IDENT);
-        if (identNode == null) {
-            identNode = annotation.findFirstToken(TokenTypes.DOT).findFirstToken(TokenTypes.IDENT);
-        }
-        return identNode.getText();
+    private static boolean isParameterized(DetailAST annotation) {
+        return annotation.findFirstToken(TokenTypes.EXPR) != null;
     }
 
     /**
@@ -274,8 +270,12 @@ public class AnnotationLocationCheck extends AbstractCheck {
      * @param annotation Some javadoc.
      * @return Some javadoc.
      */
-    private static boolean isParameterized(DetailAST annotation) {
-        return annotation.findFirstToken(TokenTypes.EXPR) != null;
+    private static String getAnnotationName(DetailAST annotation) {
+        DetailAST identNode = annotation.findFirstToken(TokenTypes.IDENT);
+        if (identNode == null) {
+            identNode = annotation.findFirstToken(TokenTypes.DOT).findFirstToken(TokenTypes.IDENT);
+        }
+        return identNode.getText();
     }
 
     /**
@@ -303,8 +303,11 @@ public class AnnotationLocationCheck extends AbstractCheck {
      * @param annotation Some javadoc.
      * @return Some javadoc.
      */
-    private static boolean hasNodeBeside(DetailAST annotation) {
-        return hasNodeBefore(annotation) || hasNodeAfter(annotation);
+    private static boolean hasNodeBefore(DetailAST annotation) {
+        final int annotationLineNo = annotation.getLineNo();
+        final DetailAST previousNode = annotation.getPreviousSibling();
+
+        return previousNode != null && annotationLineNo == previousNode.getLineNo();
     }
 
     /**
@@ -312,11 +315,8 @@ public class AnnotationLocationCheck extends AbstractCheck {
      * @param annotation Some javadoc.
      * @return Some javadoc.
      */
-    private static boolean hasNodeBefore(DetailAST annotation) {
-        final int annotationLineNo = annotation.getLineNo();
-        final DetailAST previousNode = annotation.getPreviousSibling();
-
-        return previousNode != null && annotationLineNo == previousNode.getLineNo();
+    private static boolean hasNodeBeside(DetailAST annotation) {
+        return hasNodeBefore(annotation) || hasNodeAfter(annotation);
     }
 
     /**
