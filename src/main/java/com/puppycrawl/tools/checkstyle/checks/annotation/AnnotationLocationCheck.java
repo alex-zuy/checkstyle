@@ -218,6 +218,15 @@ public class AnnotationLocationCheck extends AbstractCheck {
     /**
      * Some javadoc.
      * @param modifierNode Some javadoc.
+     * @return Some javadoc.
+     */
+    private static boolean hasAnnotations(DetailAST modifierNode) {
+        return modifierNode.findFirstToken(TokenTypes.ANNOTATION) != null;
+    }
+
+    /**
+     * Some javadoc.
+     * @param modifierNode Some javadoc.
      * @param correctLevel Some javadoc.
      */
     private void checkAnnotations(DetailAST modifierNode, int correctLevel) {
@@ -236,6 +245,24 @@ public class AnnotationLocationCheck extends AbstractCheck {
             }
             annotation = annotation.getNextSibling();
         }
+    }
+
+    /**
+     * Some javadoc.
+     * @param modifierNode Some javadoc.
+     * @return Some javadoc.
+     */
+    private static int getAnnotationLevel(DetailAST modifierNode) {
+        return modifierNode.getParent().getColumnNo();
+    }
+
+    /**
+     * Some javadoc.
+     * @param annotation Some javadoc.
+     * @return Some javadoc.
+     */
+    private static boolean isParameterized(DetailAST annotation) {
+        return annotation.findFirstToken(TokenTypes.EXPR) != null;
     }
 
     /**
@@ -276,15 +303,8 @@ public class AnnotationLocationCheck extends AbstractCheck {
      * @param annotation Some javadoc.
      * @return Some javadoc.
      */
-    private static boolean hasNodeAfter(DetailAST annotation) {
-        final int annotationLineNo = annotation.getLineNo();
-        DetailAST nextNode = annotation.getNextSibling();
-
-        if (nextNode == null) {
-            nextNode = annotation.getParent().getNextSibling();
-        }
-
-        return annotationLineNo == nextNode.getLineNo();
+    private static boolean hasNodeBeside(DetailAST annotation) {
+        return hasNodeBefore(annotation) || hasNodeAfter(annotation);
     }
 
     /**
@@ -304,34 +324,14 @@ public class AnnotationLocationCheck extends AbstractCheck {
      * @param annotation Some javadoc.
      * @return Some javadoc.
      */
-    private static boolean hasNodeBeside(DetailAST annotation) {
-        return hasNodeBefore(annotation) || hasNodeAfter(annotation);
-    }
+    private static boolean hasNodeAfter(DetailAST annotation) {
+        final int annotationLineNo = annotation.getLineNo();
+        DetailAST nextNode = annotation.getNextSibling();
 
-    /**
-     * Some javadoc.
-     * @param modifierNode Some javadoc.
-     * @return Some javadoc.
-     */
-    private static int getAnnotationLevel(DetailAST modifierNode) {
-        return modifierNode.getParent().getColumnNo();
-    }
+        if (nextNode == null) {
+            nextNode = annotation.getParent().getNextSibling();
+        }
 
-    /**
-     * Some javadoc.
-     * @param annotation Some javadoc.
-     * @return Some javadoc.
-     */
-    private static boolean isParameterized(DetailAST annotation) {
-        return annotation.findFirstToken(TokenTypes.EXPR) != null;
-    }
-
-    /**
-     * Some javadoc.
-     * @param modifierNode Some javadoc.
-     * @return Some javadoc.
-     */
-    private static boolean hasAnnotations(DetailAST modifierNode) {
-        return modifierNode.findFirstToken(TokenTypes.ANNOTATION) != null;
+        return annotationLineNo == nextNode.getLineNo();
     }
 }
